@@ -1,0 +1,34 @@
+UniqueSceneObjectName:
+  pretty_name: "Scene Object Name"
+  type: box
+  size:
+    x: 1.0
+    y: 0.0
+    z: 0.0
+  scale: 1.0
+  position:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  rotation:
+    r: 0.0
+    p: 0.0
+    y: 0.0
+  attach_to_frame: None
+UniqueSceneObject2:
+  pretty_name: "2nd Scene Object"
+  type: cylinder
+  size:
+    x: 1.0
+    y: 0.0
+    z: 2.0
+  scale: 1.0
+  position:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  rotation:
+    r: 0.0
+    p: 0.0
+    y: 0.0
+  attach_to_frame: None

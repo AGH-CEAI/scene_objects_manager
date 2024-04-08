@@ -7,11 +7,13 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(moveit_msgs REQUIRED)
+find_package(moveit_ros_planning_interface REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_executable(${PROJECT_NAME} src/scene_objects_spawner.cpp)
-ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs)
+ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs moveit_ros_planning_interface)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

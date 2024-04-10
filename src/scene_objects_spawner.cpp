@@ -2,8 +2,11 @@
 
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <yaml-cpp/yaml.h>
 
-#include "yaml-cpp/yaml.h"
+#include <filesystem>
+
+#include "scene_objects_spawner/yaml_parser.hpp"
 
 SceneObjectsSpawner::SceneObjectsSpawner() : Node("scene_obecjts_spawner"), count_(0) {
   publisher_ = this->create_publisher<MyAdaptedType>("topic", 10);
@@ -20,17 +23,18 @@ int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
 
   // TODO(macale) pass path to YAML config as argv, fallback to nothing
-  YAML::Node config = YAML::LoadFile("/home/macale/ceai/ros_ws/src/scene_objects_spawner/test/config.yml");
+  std::filesystem::path yaml_cfg("/home/macale/ceai/ros_ws/src/scene_objects_spawner/test/config.yml");
+  auto scene_objs = load_scene_objects_from_yaml(yaml_cfg);
 
   // TODO(macale) write type parser according to yaml-cpp & MoveIt2 docs
-  for (YAML::const_iterator it = config.begin(); it != config.end(); ++it) {
-    auto key = it->first.as<std::string>();
-    std::cout << "SHAPE:" << config[key]["type"] << " | Name: " << config[key]["pretty_name"] << "\n";
+  for (const auto& obj : scene_objs) {
+    std::cout << "LOADED:" << obj.unique_id_id << " | Name: " << obj.pretty_name << "\n";
   }
 
   std::cout << std::endl;
 
-  auto const node = std::make_shared<SceneObjectsSpawner>() rclcpp::executors::SingleThreadedExecutor executor;
+  auto const node = std::make_shared<SceneObjectsSpawner>();
+  rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
   auto spinner = std::thread([&executor]() { executor.spin(); });
 
@@ -68,7 +72,7 @@ int main(int argc, char* argv[]) {
     return collision_object;
   }();
 
-  rclcpp::spin();
+  // rclcpp::spin();
   rclcpp::shutdown();
   spinner.join();
   return 0;

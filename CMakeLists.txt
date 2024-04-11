@@ -14,8 +14,10 @@ find_package(std_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 set(SOURCE_FILES
-    src/scene_objects_spawner.cpp
-    src/yaml_parser.cpp)
+  src/object_spawner.cpp
+  src/scene_objects_spawner.cpp
+  src/yaml_parser.cpp
+)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs moveit_ros_planning_interface)

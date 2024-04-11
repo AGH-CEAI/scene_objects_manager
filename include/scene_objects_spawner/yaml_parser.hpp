@@ -3,21 +3,20 @@
 
 #include "scene_objects_spawner/scene_object.hpp"
 
-using SolidPrimitive = shape_msgs::msg::SolidPrimitive;
-
 std::vector<SceneObject> load_scene_objects_from_yaml(std::filesystem::path path);
 
 namespace YAML {
-static const inline std::map<std::string, uint8_t> OBJECT_TYPE_MAP = {
-  { "box", SolidPrimitive::BOX },   { "sphere", SolidPrimitive::SPHERE }, { "cylinder", SolidPrimitive::CYLINDER },
-  { "cone", SolidPrimitive::CONE }, { "prism", SolidPrimitive::PRISM },
-};
-
 template <>
 struct convert<SceneObject> {
-  static Node encode(const SceneObject&) {
-    throw std::runtime_error("Conversion of SceneObject to YAML is not implemented.");
-    return Node();
+  static Node encode(const SceneObject& rhs) {
+    Node node;
+    node["pretty_name"] = rhs.pretty_name;
+    node["attach_to_frame"] = rhs.frame_id;
+    node["type"] = PRIMITIVE_INT_MAP.at(rhs.type);
+    node["size"] = rhs.size;
+    node["scale"] = rhs.scale;
+    node["pose"] = rhs.pose;
+    return node;
   }
 
   static bool decode(const Node& node, SceneObject& rhs) {
@@ -32,7 +31,7 @@ struct convert<SceneObject> {
     rhs.type = [&] {
       auto type_str = node["type"].as<std::string>();
       std::transform(type_str.begin(), type_str.end(), type_str.begin(), ::tolower);
-      return OBJECT_TYPE_MAP.at(type_str);
+      return PRIMITIVE_STR_MAP.at(type_str);
     }();
 
     rhs.size = node["size"].as<geometry_msgs::msg::Point>();

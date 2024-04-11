@@ -4,10 +4,18 @@
 #include <cctype>
 #include <string>
 
+#include "scene_objects_spawner/utils.hpp"
 #include "yaml-cpp/yaml.h"
 
-using Pose = geometry_msgs::msg::Pose;
 using Point = geometry_msgs::msg::Point;
+using Pose = geometry_msgs::msg::Pose;
+using SolidPrimitive = shape_msgs::msg::SolidPrimitive;
+
+static const inline std::map<std::string, uint8_t> PRIMITIVE_STR_MAP = {
+  { "box", SolidPrimitive::BOX },   { "sphere", SolidPrimitive::SPHERE }, { "cylinder", SolidPrimitive::CYLINDER },
+  { "cone", SolidPrimitive::CONE }, { "prism", SolidPrimitive::PRISM },
+};
+static const inline std::map<uint8_t, std::string> PRIMITIVE_UINT_MAP = reverse_map(PRIMITIVE_STR_MAP);
 
 struct SceneObject {
   std::string unique_id_id;

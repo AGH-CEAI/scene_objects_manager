@@ -6,6 +6,7 @@
 
 #include <filesystem>
 
+#include "scene_objects_spawner/argparse.hpp"
 #include "scene_objects_spawner/object_spawner.hpp"
 #include "scene_objects_spawner/yaml_parser.hpp"
 
@@ -21,7 +22,25 @@ void SceneObjectsSpawner::timer_callback() {
 }
 
 int main(int argc, char* argv[]) {
-  rclcpp::init(argc, argv);
+  // todo read https://github.com/ros2/geometry2/blob/rolling/tf2_ros/src/static_transform_broadcaster_program.cpp#L102
+  std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
+
+  argparse::ArgumentParser program("SceneObjectsSpawner");
+  program.add_argument("foo");
+  program.add_argument("-v", "--verbose");
+
+  std::string strvar;
+  program.add_argument("--strvar").store_into(strvar);
+
+  //todo apply https://github.com/p-ranav/argparse?tab=readme-ov-file#positional-arguments
+  try {
+    //todo use args and args.size(), not arg and argv
+    program.parse_args(argc, argv);
+  } catch (const std::exception& err) {
+    std::cerr << err.what() << std::endl;
+    std::cerr << program;
+    std::exit(1);
+  }
 
   // TODO(macale) pass path to YAML config as argv, fallback to nothing
   std::filesystem::path yaml_cfg("/home/macale/ceai/ros_ws/src/scene_objects_spawner/test/config.yml");

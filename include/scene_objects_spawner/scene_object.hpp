@@ -1,3 +1,4 @@
+#pragma once
 #include <geometry_msgs/msg/pose.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
@@ -18,7 +19,7 @@ static const inline std::map<std::string, uint8_t> PRIMITIVE_STR_MAP = {
 static const inline std::map<uint8_t, std::string> PRIMITIVE_UINT_MAP = reverse_map(PRIMITIVE_STR_MAP);
 
 struct SceneObject {
-  std::string unique_id_id;
+  std::string unique_id;
   std::string pretty_name;
   std::string frame_id;
   uint8_t type;

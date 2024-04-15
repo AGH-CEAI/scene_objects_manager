@@ -1,3 +1,4 @@
+#pragma once
 #include <filesystem>
 #include <vector>
 
@@ -12,7 +13,7 @@ struct convert<SceneObject> {
     Node node;
     node["pretty_name"] = rhs.pretty_name;
     node["attach_to_frame"] = rhs.frame_id;
-    node["type"] = PRIMITIVE_INT_MAP.at(rhs.type);
+    node["type"] = PRIMITIVE_UINT_MAP.at(rhs.type);
     node["size"] = rhs.size;
     node["scale"] = rhs.scale;
     node["pose"] = rhs.pose;

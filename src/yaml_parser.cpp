@@ -12,7 +12,7 @@ std::vector<SceneObject> load_scene_objects_from_yaml(std::filesystem::path path
     auto unique_id = it->first.as<std::string>();
 
     SceneObject obj = cfg[unique_id].as<SceneObject>();
-    obj.unique_id_id = unique_id;
+    obj.unique_id = unique_id;
 
     scene_objects.push_back(obj);
   }

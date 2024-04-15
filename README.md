@@ -22,3 +22,6 @@ Check the following messages definitions:
 Consider future connection with `vision_msgs` ([link](https://github.com/ros-perception/vision_msgs)).
 
 Especially, consider if the following yaml files should be oneday somehow connected with database.
+
+## Libraries used
+- [argparse](https://github.com/p-ranav/argparse) (MIT License)

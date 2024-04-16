@@ -16,6 +16,7 @@ jobs:
   misspellings-check:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: codespell-project/actions-codespell@v2
         with:
           check_filenames: true

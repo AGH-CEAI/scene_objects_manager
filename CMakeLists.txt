@@ -21,6 +21,7 @@ FetchContent_MakeAvailable(argparse)
 
 set(
   SOURCE_FILES
+  src/argv_parser.cpp
   src/object_spawner.cpp
   src/scene_objects_spawner.cpp
   src/yaml_parser.cpp

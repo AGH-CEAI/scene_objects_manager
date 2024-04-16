@@ -8,8 +8,6 @@
 #include "rclcpp/type_adapter.hpp"
 #include "std_msgs/msg/string.hpp"
 
-using namespace std::chrono_literals;
-
 class SceneObjectsManager : public rclcpp::Node {
 public:
   SceneObjectsManager() : Node("SceneObjectsManager"){};

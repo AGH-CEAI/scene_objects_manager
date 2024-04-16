@@ -14,7 +14,7 @@ public:
   void spawn_object(const SceneObject& obj);
 
 private:
-  CollisionObject make_collision_object(const SceneObject& raw_obj) const;
+  static CollisionObject make_collision_object(const SceneObject& raw_obj);
   void spawn(const CollisionObject& object);
 
   std::string _planning_frame_id;

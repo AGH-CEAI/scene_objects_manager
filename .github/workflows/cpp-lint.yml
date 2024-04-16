@@ -1,0 +1,22 @@
+name: Cpp lint
+
+on:
+  pull_request:
+  push:
+    branches: [humble-devel]
+
+jobs:
+  clang-format-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: RafikFarhad/clang-format-github-action@v3
+        with:
+          sources: "src/**/*.h,src/**/*.c,test/**/*.c"
+  misspellings-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          check_filenames: true
+          check_hidden: true

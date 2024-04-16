@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OBJECT_SPAWNER_HPP_INCLUDED
+#define OBJECT_SPAWNER_HPP_INCLUDED
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <string>
@@ -20,3 +21,4 @@ private:
   std::string _planning_frame_id;
   moveit::planning_interface::PlanningSceneInterface _planning_scene_interface;
 };
+#endif  // OBJECT_SPAWNER_HPP_INCLUDED

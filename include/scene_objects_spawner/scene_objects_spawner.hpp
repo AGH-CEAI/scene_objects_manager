@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SCENE_OBJECTS_SPAWNER_HPP_INCLUDED
+#define SCENE_OBJECTS_SPAWNER_HPP_INCLUDED
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -12,3 +13,4 @@ class SceneObjectsSpawner : public rclcpp::Node {
 public:
   SceneObjectsSpawner() : Node("SceneObjectsSpawner"){};
 };
+#endif  // SCENE_OBJECTS_SPAWNER_HPP_INCLUDED

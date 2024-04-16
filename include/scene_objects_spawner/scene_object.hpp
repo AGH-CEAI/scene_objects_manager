@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SCENE_OBJECT_HPP_INCLUDED
+#define SCENE_OBJECT_HPP_INCLUDED
 #include <geometry_msgs/msg/pose.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
@@ -27,3 +28,4 @@ struct SceneObject {
   };
   static const inline std::map<uint8_t, std::string> PRIMITIVE_UINT_MAP = reverse_map(PRIMITIVE_STR_MAP);
 };
+#endif  // SCENE_OBJECT_HPP_INCLUDED

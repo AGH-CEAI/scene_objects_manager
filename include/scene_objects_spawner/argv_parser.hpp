@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ARGV_PARSER_HPP_INCLUDED
+#define ARGV_PARSER_HPP_INCLUDED
+
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -12,3 +14,5 @@ bool validate_launch_arguments(const LaunchArguments& args);
 
 const LaunchArguments parse_args(const std::string& program_name, const std::string& program_version,
                                  const std::vector<std::string>& input_args);
+
+#endif  // ARGV_PARSER_HPP_INCLUDED

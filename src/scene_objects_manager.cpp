@@ -4,7 +4,7 @@
 #include "scene_objects_manager/spawner.hpp"
 #include "scene_objects_manager/yaml_parser.hpp"
 
-using namespace sobjspawner;
+using namespace sobjmanager;
 
 int main(int argc, char* argv[]) {
   const LaunchArguments launch_args = [&] {

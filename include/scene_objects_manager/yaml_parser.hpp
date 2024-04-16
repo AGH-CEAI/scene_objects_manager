@@ -5,9 +5,9 @@
 
 #include "scene_objects_manager/scene_object.hpp"
 
-namespace sobjspawner {
+namespace sobjmanager {
 
 std::vector<SceneObject> load_scene_objects_from_yaml(std::filesystem::path path);
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager
 #endif  // YAML_PARSER_HPP_INCLUDED

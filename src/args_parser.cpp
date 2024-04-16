@@ -2,7 +2,7 @@
 
 #include <argparse/argparse.hpp>
 
-namespace sobjspawner {
+namespace sobjmanager {
 
 bool validate_launch_arguments(const LaunchArguments& args) {
   if (args.cfg_path.string().empty()) {
@@ -46,4 +46,4 @@ const LaunchArguments parse_args(
   return args;
 }
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager

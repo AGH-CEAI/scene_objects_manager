@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace sobjspawner {
+namespace sobjmanager {
 
 struct LaunchArguments {
   std::filesystem::path cfg_path;
@@ -19,5 +19,5 @@ const LaunchArguments parse_args(
     const std::string& program_version,
     const std::vector<std::string>& input_args);
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager
 #endif  // ARGS_PARSER_HPP_INCLUDED

@@ -9,7 +9,7 @@
 #include "scene_objects_manager/utils.hpp"
 #include "yaml-cpp/yaml.h"
 
-namespace sobjspawner {
+namespace sobjmanager {
 
 using Point = geometry_msgs::msg::Point;
 using Pose = geometry_msgs::msg::Pose;
@@ -31,5 +31,5 @@ struct SceneObject {
   static const inline std::map<uint8_t, std::string> PRIMITIVE_UINT_MAP = reverse_map(PRIMITIVE_STR_MAP);
 };
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager
 #endif  // SCENE_OBJECT_HPP_INCLUDED

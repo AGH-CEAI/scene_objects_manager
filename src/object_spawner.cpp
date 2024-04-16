@@ -1,6 +1,6 @@
 #include "scene_objects_spawner/object_spawner.hpp"
 
-namespace sobjspawner {
+namespace sobjmanager {
 
 ObjectsSpawner::ObjectsSpawner(std::string planning_frame_id)
   : _planning_frame_id(planning_frame_id)
@@ -33,4 +33,4 @@ void ObjectsSpawner::spawn(const CollisionObject& object) {
   _planning_scene_interface.applyCollisionObject(object);
 }
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager

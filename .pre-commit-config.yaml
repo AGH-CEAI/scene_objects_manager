@@ -80,6 +80,7 @@ repos:
         entry: env AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS=1 ament_cppcheck
         language: system
         files: \.(h\+\+|h|hh|hxx|hpp|cuh|c|cc|cpp|cu|c\+\+|cxx|tpp|txx)$
+        exclude: "$CI != ''"
 
   # Maybe use https://github.com/cpplint/cpplint instead
   # TODO(macale) run it before release
@@ -102,7 +103,8 @@ repos:
         entry: clang-format-14
         language: system
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
-        args: ['-fallback-style=none', '-i']
+        args: ["-fallback-style=none", "-i"]
+        exclude: "$CI != ''"
 
   # Cmake hooks
   - repo: local
@@ -114,6 +116,7 @@ repos:
         entry: ament_lint_cmake
         language: system
         files: CMakeLists.txt$
+        exclude: "$CI != ''"
 
   # Copyright
   # TODO: turn on on public code release

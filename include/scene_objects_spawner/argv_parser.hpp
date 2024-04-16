@@ -1,7 +1,6 @@
 #pragma once
+#include <argparse/argparse.hpp>
 #include <filesystem>
-
-#include "scene_objects_spawner/argparse.hpp"
 
 struct LaunchArguments {
   std::filesystem::path cfg_path;

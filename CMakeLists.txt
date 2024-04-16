@@ -12,24 +12,43 @@ find_package(moveit_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
+include(FetchContent)
+FetchContent_Declare(
+  argparse
+  GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+)
+FetchContent_MakeAvailable(argparse)
 
-set(SOURCE_FILES
+set(
+  SOURCE_FILES
   src/object_spawner.cpp
   src/scene_objects_spawner.cpp
   src/yaml_parser.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs moveit_ros_planning_interface)
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
-
-  target_link_libraries(${PROJECT_NAME} yaml-cpp)
-
-install(TARGETS
+ament_target_dependencies(
   ${PROJECT_NAME}
+  moveit_ros_planning_interface
+  rclcpp
+  std_msgs
+)
+
+target_include_directories(
+  ${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  ${argparse_SOURCE_DIR}/argparse/include
+)
+
+target_link_libraries(
+  ${PROJECT_NAME}
+  argparse
+  yaml-cpp
+)
+
+install(
+  TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 

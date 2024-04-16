@@ -1,7 +1,7 @@
 UniqueSceneObjectName:
   pretty_name: "Scene Object Name"
   type: box
-  attach_to_frame: None
+  frame_id: world
   size:
     x: 1.0
     y: 0.0
@@ -20,7 +20,7 @@ UniqueSceneObjectName:
 UniqueSceneObject2:
   pretty_name: "2nd Scene Object"
   type: cylinder
-  attach_to_frame: None
+  frame_id: world
   size:
     x: 1.0
     y: 0.0

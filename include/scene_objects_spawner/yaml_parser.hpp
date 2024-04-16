@@ -12,7 +12,7 @@ struct convert<SceneObject> {
   static Node encode(const SceneObject& rhs) {
     Node node;
     node["pretty_name"] = rhs.pretty_name;
-    node["attach_to_frame"] = rhs.frame_id;
+    node["frame_id"] = rhs.frame_id;
     node["type"] = PRIMITIVE_UINT_MAP.at(rhs.type);
     node["size"] = rhs.size;
     node["scale"] = rhs.scale;
@@ -27,7 +27,7 @@ struct convert<SceneObject> {
 
     // Can't obtain the unique_id from the passed node.
     rhs.pretty_name = node["pretty_name"].as<std::string>();
-    rhs.frame_id = node["attach_to_frame"].as<std::string>();
+    rhs.frame_id = node["frame_id"].as<std::string>();
 
     rhs.type = [&] {
       auto type_str = node["type"].as<std::string>();

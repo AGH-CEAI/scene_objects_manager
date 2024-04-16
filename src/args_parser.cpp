@@ -1,4 +1,4 @@
-#include "scene_objects_spawner/args_parser.hpp"
+#include "scene_objects_manager/args_parser.hpp"
 
 #include <argparse/argparse.hpp>
 

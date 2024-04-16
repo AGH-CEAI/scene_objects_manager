@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <vector>
 
-#include "scene_objects_spawner/scene_object.hpp"
+#include "scene_objects_manager/scene_object.hpp"
 
 namespace sobjspawner {
 

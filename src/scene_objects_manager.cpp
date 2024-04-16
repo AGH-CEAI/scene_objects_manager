@@ -1,6 +1,6 @@
 #include "scene_objects_manager/scene_objects_manager.hpp"
 
-#include "scene_objects_manager/argv_parser.hpp"
+#include "scene_objects_manager/args_parser.hpp"
 #include "scene_objects_manager/spawner.hpp"
 #include "scene_objects_manager/yaml_parser.hpp"
 
@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
     return parse_args("SceneObjectsSpawner", "0.0.0", args);
   }();
-  auto const node = std::make_shared<SceneObjectsSpawner>();
+  auto const node = std::make_shared<SceneObjectsManager>();
 
   auto scene_objs = load_scene_objects_from_yaml(launch_args.cfg_path);
   RCLCPP_INFO(

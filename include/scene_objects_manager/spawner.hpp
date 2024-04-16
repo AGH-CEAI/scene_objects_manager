@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "scene_objects_spawner/scene_object.hpp"
+#include "scene_objects_manager/scene_object.hpp"
 
 using CollisionObject = moveit_msgs::msg::CollisionObject;
 

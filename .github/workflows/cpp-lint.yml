@@ -21,10 +21,3 @@ jobs:
         with:
           check_filenames: true
           check_hidden: true
-  cmake-format-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: PuneetMatharu/cmake-format-lint-action@v1.0.4
-        with:
-          args: --config-files .cmake-format.yml --check

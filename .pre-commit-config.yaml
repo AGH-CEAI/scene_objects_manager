@@ -105,6 +105,13 @@ repos:
         args: ["-fallback-style=none", "-i"]
 
   # Cmake hooks
+  - repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.10
+    hooks:
+    # Note: Do not use format - the wrapping function is bugged
+    # https://github.com/cheshirekow/cmake_format/issues/180
+    - id: cmake-lint
+      args: ["--disable", "C0103"]
   - repo: local
     hooks:
       - id: ament_lint_cmake
@@ -112,6 +119,7 @@ repos:
         description: Check format of CMakeLists.txt files.
         stages: [commit]
         entry: ament_lint_cmake
+        args: ["--filter=-readability/wonkycase"]
         language: system
         files: CMakeLists.txt$
 
@@ -148,12 +156,4 @@ repos:
     hooks:
       - id: codespell
         args: ["--write-changes"]
-        exclude: \.(svg|pyc|drawio)$
-
-  - repo: https://github.com/cheshirekow/cmake-format-precommit
-    rev: v0.6.10
-    hooks:
-    - id: cmake-format
-      args: ["--in-place"]
-    - id: cmake-lint
-      args: ["--disable", "C0103"]
+        exclude: \.(svg|pyc|drawio)

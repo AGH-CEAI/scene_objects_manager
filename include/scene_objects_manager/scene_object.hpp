@@ -5,7 +5,7 @@
 #include <cctype>
 #include <string>
 
-#include "scene_objects_spawner/utils.hpp"
+#include "scene_objects_manager/utils.hpp"
 #include "yaml-cpp/yaml.h"
 
 using Point = geometry_msgs::msg::Point;

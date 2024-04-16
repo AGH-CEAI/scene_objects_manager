@@ -3,13 +3,13 @@
 
 #include <string>
 
-#include "scene_objects_spawner/scene_object.hpp"
+#include "scene_objects_manager/scene_object.hpp"
 
 using CollisionObject = moveit_msgs::msg::CollisionObject;
 
-class ObjectsSpawner {
+class Spawner {
 public:
-  ObjectsSpawner(std::string planning_frame_id);
+  Spawner(std::string planning_frame_id);
 
   void spawn_object(const SceneObject& obj);
 

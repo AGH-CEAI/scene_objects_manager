@@ -10,7 +10,7 @@
 
 using namespace std::chrono_literals;
 
-class SceneObjectsSpawner : public rclcpp::Node {
+class SceneObjectsManager : public rclcpp::Node {
 public:
-  SceneObjectsSpawner() : Node("SceneObjectsSpawner"){};
+  SceneObjectsManager() : Node("SceneObjectsManager"){};
 };

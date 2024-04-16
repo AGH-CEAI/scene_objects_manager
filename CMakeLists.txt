@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(scene_objects_spawner)
+project(scene_objects_manager)
 set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -21,8 +21,8 @@ FetchContent_MakeAvailable(argparse)
 
 set(
   SOURCE_FILES
-  src/object_spawner.cpp
-  src/scene_objects_spawner.cpp
+  src/spawner.cpp
+  src/scene_objects_manager.cpp
   src/yaml_parser.cpp
 )
 

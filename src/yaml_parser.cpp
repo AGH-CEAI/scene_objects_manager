@@ -1,4 +1,4 @@
-#include "scene_objects_spawner/yaml_parser.hpp"
+#include "scene_objects_manager/yaml_parser.hpp"
 
 #include <yaml-cpp/yaml.h>
 

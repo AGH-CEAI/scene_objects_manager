@@ -9,4 +9,5 @@ static std::map<V, K> reverse_map(const std::map<K, V>& m) {
     r[kv.second] = kv.first;
   return r;
 }
+
 #endif  // UTILS_HPP_INCLUDED

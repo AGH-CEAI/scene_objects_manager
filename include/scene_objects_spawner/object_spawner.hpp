@@ -8,6 +8,8 @@
 
 using CollisionObject = moveit_msgs::msg::CollisionObject;
 
+namespace sobjspawner {
+
 class ObjectsSpawner {
 public:
   ObjectsSpawner(std::string planning_frame_id);
@@ -21,4 +23,6 @@ private:
   std::string _planning_frame_id;
   moveit::planning_interface::PlanningSceneInterface _planning_scene_interface;
 };
+
+}  // namespace sobjspawner
 #endif  // OBJECT_SPAWNER_HPP_INCLUDED

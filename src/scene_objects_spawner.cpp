@@ -4,6 +4,8 @@
 #include "scene_objects_spawner/object_spawner.hpp"
 #include "scene_objects_spawner/yaml_parser.hpp"
 
+using namespace sobjspawner;
+
 int main(int argc, char* argv[]) {
   const LaunchArguments launch_args = [&] {
     std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);

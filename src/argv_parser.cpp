@@ -2,6 +2,8 @@
 
 #include <argparse/argparse.hpp>
 
+namespace sobjspawner {
+
 bool validate_launch_arguments(const LaunchArguments& args) {
   if (args.cfg_path.string().empty()) {
     std::cerr << "No given path to a configuration file." << std::endl;
@@ -41,3 +43,5 @@ const LaunchArguments parse_args(const std::string& program_name, const std::str
 
   return args;
 }
+
+}  // namespace sobjspawner

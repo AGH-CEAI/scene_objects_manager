@@ -1,7 +1,11 @@
-#pragma once
+#ifndef ARGS_PARSER_HPP_INCLUDED
+#define ARGS_PARSER_HPP_INCLUDED
+
 #include <filesystem>
 #include <string>
 #include <vector>
+
+namespace sobjspawner {
 
 struct LaunchArguments {
   std::filesystem::path cfg_path;
@@ -14,3 +18,6 @@ const LaunchArguments parse_args(
     const std::string& program_name,
     const std::string& program_version,
     const std::vector<std::string>& input_args);
+
+}  // namespace sobjspawner
+#endif  // ARGS_PARSER_HPP_INCLUDED

@@ -1,12 +1,15 @@
-#pragma once
+#ifndef SCENE_OBJECT_HPP_INCLUDED
+#define SCENE_OBJECT_HPP_INCLUDED
 #include <geometry_msgs/msg/pose.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <cctype>
 #include <string>
 
-#include "scene_objects_manager/utils.hpp"
+#include "scene_objects_spawner/utils.hpp"
 #include "yaml-cpp/yaml.h"
+
+namespace sobjspawner {
 
 using Point = geometry_msgs::msg::Point;
 using Pose = geometry_msgs::msg::Pose;
@@ -27,3 +30,6 @@ struct SceneObject {
   };
   static const inline std::map<uint8_t, std::string> PRIMITIVE_UINT_MAP = reverse_map(PRIMITIVE_STR_MAP);
 };
+
+}  // namespace sobjspawner
+#endif  // SCENE_OBJECT_HPP_INCLUDED

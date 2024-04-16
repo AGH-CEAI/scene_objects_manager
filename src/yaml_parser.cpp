@@ -2,6 +2,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+namespace sobjspawner {
+
 std::vector<SceneObject> load_scene_objects_from_yaml(std::filesystem::path path) {
   YAML::Node cfg = YAML::LoadFile(path.string());
 
@@ -20,21 +22,23 @@ std::vector<SceneObject> load_scene_objects_from_yaml(std::filesystem::path path
   return scene_objects;
 }
 
+}  // namespace sobjspawner
+
 namespace YAML {
 template <>
-struct convert<SceneObject> {
-  static Node encode(const SceneObject& rhs) {
+struct convert<sobjspawner::SceneObject> {
+  static Node encode(const sobjspawner::SceneObject& rhs) {
     Node node;
     node["pretty_name"] = rhs.pretty_name;
     node["frame_id"] = rhs.frame_id;
-    node["type"] = SceneObject::PRIMITIVE_UINT_MAP.at(rhs.type);
+    node["type"] = sobjspawner::SceneObject::PRIMITIVE_UINT_MAP.at(rhs.type);
     node["size"] = rhs.size;
     node["scale"] = rhs.scale;
     node["pose"] = rhs.pose;
     return node;
   }
 
-  static bool decode(const Node& node, SceneObject& rhs) {
+  static bool decode(const Node& node, sobjspawner::SceneObject& rhs) {
     if (!node.IsMap() || node.size() != 6) {
       return false;
     }
@@ -46,7 +50,7 @@ struct convert<SceneObject> {
     rhs.type = [&] {
       auto type_str = node["type"].as<std::string>();
       std::transform(type_str.begin(), type_str.end(), type_str.begin(), ::tolower);
-      return SceneObject::PRIMITIVE_STR_MAP.at(type_str);
+      return sobjspawner::SceneObject::PRIMITIVE_STR_MAP.at(type_str);
     }();
 
     rhs.size = node["size"].as<geometry_msgs::msg::Point>();

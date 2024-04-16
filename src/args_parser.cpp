@@ -1,6 +1,8 @@
-#include "scene_objects_spawner/argv_parser.hpp"
+#include "scene_objects_spawner/args_parser.hpp"
 
 #include <argparse/argparse.hpp>
+
+namespace sobjspawner {
 
 bool validate_launch_arguments(const LaunchArguments& args) {
   if (args.cfg_path.string().empty()) {
@@ -43,3 +45,5 @@ const LaunchArguments parse_args(
 
   return args;
 }
+
+}  // namespace sobjspawner

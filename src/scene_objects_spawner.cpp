@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
   auto spawner = ObjectsSpawner(launch_args.planning_frame_id);
   for (const auto& obj : scene_objs) {
     spawner.spawn_object(obj);
-    RCLCPP_INFO(node->get_logger(), "Spawned new scene object \"%s\" (unique_id: %s ).", obj.pretty_name.c_str(),
+    RCLCPP_INFO(node->get_logger(), "Spawned new scene object \"%s\" (unique_id: %s).", obj.pretty_name.c_str(),
                 obj.unique_id.c_str());
   }
   RCLCPP_INFO(node->get_logger(), "Spawned all objects.");

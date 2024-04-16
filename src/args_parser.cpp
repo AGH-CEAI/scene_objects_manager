@@ -1,8 +1,8 @@
-#include "scene_objects_spawner/argv_parser.hpp"
+#include "scene_objects_manager/args_parser.hpp"
 
 #include <argparse/argparse.hpp>
 
-namespace sobjspawner {
+namespace sobjmanager {
 
 bool validate_launch_arguments(const LaunchArguments& args) {
   if (args.cfg_path.string().empty()) {
@@ -13,8 +13,10 @@ bool validate_launch_arguments(const LaunchArguments& args) {
   return true;
 }
 
-const LaunchArguments parse_args(const std::string& program_name, const std::string& program_version,
-                                 const std::vector<std::string>& input_args) {
+const LaunchArguments parse_args(
+    const std::string& program_name,
+    const std::string& program_version,
+    const std::vector<std::string>& input_args) {
   argparse::ArgumentParser program(program_name, program_version, argparse::default_arguments::help);
   LaunchArguments args;
 
@@ -44,4 +46,4 @@ const LaunchArguments parse_args(const std::string& program_name, const std::str
   return args;
 }
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager

@@ -9,12 +9,12 @@
 #include "rclcpp/type_adapter.hpp"
 #include "std_msgs/msg/string.hpp"
 
-namespace sobjspawner {
+namespace sobjmanager {
 
-class SceneObjectsSpawner : public rclcpp::Node {
+class SceneObjectsManager : public rclcpp::Node {
 public:
-  SceneObjectsSpawner() : Node("SceneObjectsSpawner"){};
+  SceneObjectsManager() : Node("SceneObjectsManager"){};
 };
 
-}  // namespace sobjspawner
+}  // namespace sobjmanager
 #endif  // SCENE_OBJECTS_SPAWNER_HPP_INCLUDED

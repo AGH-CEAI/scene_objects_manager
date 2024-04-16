@@ -1,17 +1,17 @@
-#include "scene_objects_spawner/object_spawner.hpp"
+#include "scene_objects_manager/spawner.hpp"
 
 namespace sobjmanager {
 
-ObjectsSpawner::ObjectsSpawner(std::string planning_frame_id)
+Spawner::Spawner(std::string planning_frame_id)
   : _planning_frame_id(planning_frame_id)
   , _planning_scene_interface(moveit::planning_interface::PlanningSceneInterface()) {
 }
 
-void ObjectsSpawner::spawn_object(const SceneObject& obj) {
+void Spawner::spawn_object(const SceneObject& obj) {
   spawn(make_collision_object(obj));
 }
 
-CollisionObject ObjectsSpawner::make_collision_object(const SceneObject& raw_obj) {
+CollisionObject Spawner::make_collision_object(const SceneObject& raw_obj) {
   CollisionObject obj;
   obj.header.frame_id = raw_obj.frame_id;
   obj.id = raw_obj.unique_id;
@@ -29,7 +29,7 @@ CollisionObject ObjectsSpawner::make_collision_object(const SceneObject& raw_obj
   return obj;
 }
 
-void ObjectsSpawner::spawn(const CollisionObject& object) {
+void Spawner::spawn(const CollisionObject& object) {
   _planning_scene_interface.applyCollisionObject(object);
 }
 

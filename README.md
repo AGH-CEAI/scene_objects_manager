@@ -1,6 +1,6 @@
-# Scene Objects Spawner
+# Scene Objects Manager
 
-A Node for spawning objects in MoveIt2 environment with ROS 2 API.
+A Node for object management in MoveIt2 Planning Scene environment with ROS 2 API.
 
 ---
 

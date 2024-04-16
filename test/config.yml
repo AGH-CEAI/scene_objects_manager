@@ -1,34 +1,38 @@
 UniqueSceneObjectName:
   pretty_name: "Scene Object Name"
   type: box
+  frame_id: world
   size:
     x: 1.0
     y: 0.0
     z: 0.0
   scale: 1.0
-  position:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  rotation:
-    r: 0.0
-    p: 0.0
-    y: 0.0
-  attach_to_frame: None
+  pose:
+    position:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
 UniqueSceneObject2:
   pretty_name: "2nd Scene Object"
   type: cylinder
+  frame_id: world
   size:
     x: 1.0
     y: 0.0
-    z: 2.0
-  scale: 1.0
-  position:
-    x: 0.0
-    y: 0.0
     z: 0.0
-  rotation:
-    r: 0.0
-    p: 0.0
-    y: 0.0
-  attach_to_frame: None
+  scale: 1.0
+  pose:
+    position:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0

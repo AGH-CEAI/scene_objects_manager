@@ -9,7 +9,7 @@ void ObjectsSpawner::spawn_object(const SceneObject& obj) {
   spawn(make_collision_object(obj));
 }
 
-CollisionObject ObjectsSpawner::make_collision_object(const SceneObject& raw_obj) const {
+CollisionObject ObjectsSpawner::make_collision_object(const SceneObject& raw_obj) {
   CollisionObject obj;
   obj.header.frame_id = raw_obj.frame_id;
   obj.id = raw_obj.unique_id;

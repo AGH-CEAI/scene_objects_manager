@@ -1,4 +1,5 @@
 #include "scene_objects_manager/scene_objects_manager.hpp"
+#include "scene_objects_manager/object_pose_detector.hpp"
 
 #include "scene_objects_manager/args_parser.hpp"
 #include "scene_objects_manager/spawner.hpp"
@@ -11,11 +12,14 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
     return parse_args("SceneObjectsSpawner", "0.0.0", args);
   }();
-  auto const node = std::make_shared<SceneObjectsManager>();
+
+  // auto const node = std::make_shared<SceneObjectsManager>();
+  auto manager_node = std::make_shared<SceneObjectsManager>();
+  auto detector_node = std::make_shared<ObjectPoseDetectorNode>();
 
   auto scene_objs = load_scene_objects_from_yaml(launch_args.cfg_path);
   RCLCPP_INFO(
-      node->get_logger(),
+      manager_node->get_logger(),
       "Loaded %d object(s) from the configuration file.",
       static_cast<int>(scene_objs.size()));
 
@@ -23,14 +27,19 @@ int main(int argc, char* argv[]) {
   for (const auto& obj : scene_objs) {
     spawner.spawn_object(obj);
     RCLCPP_INFO(
-        node->get_logger(),
+        manager_node->get_logger(),
         "Spawned new scene object \"%s\" (unique_id: %s).",
         obj.pretty_name.c_str(),
         obj.unique_id.c_str());
   }
-  RCLCPP_INFO(node->get_logger(), "Spawned all objects.");
+  RCLCPP_INFO(manager_node->get_logger(), "Spawned all objects.");
 
-  rclcpp::spin(node);
+  rclcpp::executors::MultiThreadedExecutor executor_;
+  executor_.add_node(manager_node);
+  executor_.add_node(detector_node);
+  executor_.spin();
+
+  // rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }

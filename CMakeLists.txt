@@ -12,6 +12,12 @@ find_package(moveit_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
 include(FetchContent)
 FetchContent_Declare(
   argparse
@@ -25,31 +31,51 @@ set(
   src/scene_objects_manager.cpp
   src/spawner.cpp
   src/yaml_parser.cpp
+  src/object_pose_detector.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/DetectBlocksPoses.srv"
+  DEPENDENCIES geometry_msgs
+)
+
+add_executable(${PROJECT_NAME}_node ${SOURCE_FILES})
+
+rosidl_get_typesupport_target(cpp_typesupport_target
+  ${PROJECT_NAME} "rosidl_typesupport_cpp"
+)
+
+target_link_libraries(${PROJECT_NAME}_node
+  ${cpp_typesupport_target}
+)
+
 ament_target_dependencies(
-  ${PROJECT_NAME}
+  ${PROJECT_NAME}_node
   moveit_ros_planning_interface
   rclcpp
   std_msgs
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  cv_bridge
 )
 
 target_include_directories(
-  ${PROJECT_NAME} PUBLIC
+  ${PROJECT_NAME}_node PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
   ${argparse_SOURCE_DIR}/argparse/include
 )
 
 target_link_libraries(
-  ${PROJECT_NAME}
+  ${PROJECT_NAME}_node
   argparse
   yaml-cpp
+  ${OpenCV_LIBRARIES}
 )
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS ${PROJECT_NAME}_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -60,4 +86,5 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+ament_export_dependencies(rosidl_default_runtime)
 ament_package()

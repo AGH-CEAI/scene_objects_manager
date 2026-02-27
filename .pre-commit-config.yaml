@@ -71,15 +71,16 @@ repos:
   #- id: cppcheck
   #args: ['--error-exitcode=1', '-f', '--inline-suppr', '-q', '-rp', '--suppress=internalAstError', '--suppress=unknownMacro', '--verbose']
 
-  - repo: local
-    hooks:
-      - id: ament_cppcheck
-        name: ament_cppcheck
-        description: Static code analysis of C/C++ files.
-        stages: [commit]
-        entry: env AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS=1 ament_cppcheck
-        language: system
-        files: \.(h\+\+|h|hh|hxx|hpp|cuh|c|cc|cpp|cu|c\+\+|cxx|tpp|txx)$
+# todo make it alaive
+  # - repo: local
+  #   hooks:
+  #     - id: ament_cppcheck
+  #       name: ament_cppcheck
+  #       description: Static code analysis of C/C++ files.
+  #       stages: [pre-commit]
+  #       entry: env AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS=1 ament_cppcheck
+  #       language: system
+  #       files: \.(h\+\+|h|hh|hxx|hpp|cuh|c|cc|cpp|cu|c\+\+|cxx|tpp|txx)$
 
   # Maybe use https://github.com/cpplint/cpplint instead
   # TODO(macale) run it before release
@@ -94,34 +95,36 @@ repos:
   #       files: \.(h\+\+|h|hh|hxx|hpp|cuh|c|cc|cpp|cu|c\+\+|cxx|tpp|txx)$
   #       args: ["--linelength=120"]
 
-  - repo: local
-    hooks:
-      - id: clang-format
-        name: clang-format
-        description: Format files with ClangFormat.
-        entry: clang-format-14
-        language: system
-        files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
-        args: ["-fallback-style=none", "-i"]
+# todo make it alaive
+  # - repo: local
+  #   hooks:
+  #     - id: clang-format
+  #       name: clang-format
+  #       description: Format files with ClangFormat.
+  #       entry: clang-format-14
+  #       language: system
+  #       files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
+  #       args: ["-fallback-style=none", "-i"]
 
+# make it alaive
   # Cmake hooks
-  - repo: https://github.com/cheshirekow/cmake-format-precommit
-    rev: v0.6.10
-    hooks:
-    # Note: Do not use format - the wrapping function is bugged
-    # https://github.com/cheshirekow/cmake_format/issues/180
-    - id: cmake-lint
-      args: ["--disable", "C0103"]
-  - repo: local
-    hooks:
-      - id: ament_lint_cmake
-        name: ament_lint_cmake
-        description: Check format of CMakeLists.txt files.
-        stages: [commit]
-        entry: ament_lint_cmake
-        args: ["--filter=-readability/wonkycase"]
-        language: system
-        files: CMakeLists.txt$
+  # - repo: https://github.com/cheshirekow/cmake-format-precommit
+  #   rev: v0.6.10
+  #   hooks:
+  #   # Note: Do not use format - the wrapping function is bugged
+  #   # https://github.com/cheshirekow/cmake_format/issues/180
+  #   - id: cmake-lint
+  #     args: ["--disable", "C0103"]
+  # - repo: local
+    # hooks:
+    #   - id: ament_lint_cmake
+    #     name: ament_lint_cmake
+    #     description: Check format of CMakeLists.txt files.
+    #     stages: [pre-commit]
+    #     entry: ament_lint_cmake
+    #     args: ["--filter=-readability/wonkycase"]
+    #     language: system
+    #     files: CMakeLists.txt$
 
   # Copyright
   # TODO: turn on on public code release

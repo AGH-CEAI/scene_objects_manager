@@ -13,7 +13,7 @@ namespace sobjmanager {
 
 class SceneObjectsManager : public rclcpp::Node {
 public:
-  SceneObjectsManager() : Node("SceneObjectsManager"){};
+  SceneObjectsManager() : Node("scene_objects_manager"){};
 };
 
 }  // namespace sobjmanager

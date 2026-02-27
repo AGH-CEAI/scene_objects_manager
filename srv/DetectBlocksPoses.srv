@@ -1,0 +1,6 @@
+# Request
+bool start_detection
+
+---
+# Response
+geometry_msgs/PoseArray poses

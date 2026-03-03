@@ -66,12 +66,5 @@ target_link_libraries(${PROJECT_NAME}_node argparse yaml-cpp
 
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  set(_ament_cmake_copyright_found TRUE)
-  set(_ament_cmake_cpplint_found TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
-
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()

@@ -1,43 +1,63 @@
-#ifndef OBJECT_POSE_DETECTOR_NODE_HPP_INCLUDED
-#define OBJECT_POSE_DETECTOR_NODE_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__OBJECT_POSE_DETECTOR_HPP_
+#define SCENE_OBJECTS_MANAGER__OBJECT_POSE_DETECTOR_HPP_
+
+#include <cv_bridge/cv_bridge.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <yaml-cpp/yaml.h>
 
 #include <mutex>
-#include <optional>
-
+#include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
-#include <cv_bridge/cv_bridge.h>
+#include <optional>
+#include <stdexcept>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/image.hpp"
+#include "ament_index_cpp/get_package_share_directory.hpp"
 #include "geometry_msgs/msg/pose_array.hpp"
-
+#include "rclcpp/rclcpp.hpp"
 #include "scene_objects_manager/srv/detect_blocks_poses.hpp"
-
+#include "sensor_msgs/msg/image.hpp"
 
 namespace sobjmanager {
 
-class ObjectPoseDetectorNode : public rclcpp::Node
-{
+class ObjectPoseDetectorNode : public rclcpp::Node {
 public:
-    ObjectPoseDetectorNode();
+  ObjectPoseDetectorNode();
 
 private:
-    void imageCb(const sensor_msgs::msg::Image::SharedPtr msg);
+  void imageCb(const sensor_msgs::msg::Image::SharedPtr msg);
 
-    void onDetect(
-        const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request> req,
-        std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
+  void onDetect(
+      const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request> req,
+      std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
 
-    std::mutex mtx_;
-    std::optional<cv::Mat> last_bgr_;
-    rclcpp::Time last_stamp_;
+  void readCamCalib();
 
-    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr sub_;
-    rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr srv_;
+  std::mutex mtx_;
+  std::optional<cv::Mat> last_rgb_;
+  rclcpp::Time last_rgb_stamp_;
 
-    std::string image_topic_;
-    std::string output_frame_;
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr sub_;
+  rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr srv_;
+
+  std::string image_topic_;
+  std::string output_frame_;
+
+  std::vector<cv::Vec3d> rvecs, tvecs;
+  std::string camera_info_path_;
+  cv::Mat camera_matrix_;
+  cv::Mat dist_coeffs_;
+  double aruco_size_{ 0.0198 };
+
+  std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+  std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+  std::string camera_frame_;
+  std::string target_frame_;
 };
 
-} // namespace sobjmanager
-#endif // OBJECT_POSE_DETECTOR_NODE_HPP_INCLUDED
+}  // namespace sobjmanager
+#endif  // SCENE_OBJECTS_MANAGER__OBJECT_POSE_DETECTOR_HPP_

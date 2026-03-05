@@ -68,3 +68,5 @@ private:
 
 }  // namespace sobjmanager
 #endif  // SCENE_OBJECTS_MANAGER__OBJECT_POSE_DETECTOR_HPP_
+
+// test

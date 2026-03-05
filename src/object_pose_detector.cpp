@@ -17,7 +17,7 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
-  camera_frame_ = "cam_scene_rgb_camera_optical_frame";
+  camera_frame_ = "cam_scene_rgb_camera_optical_frame_cal";
   target_frame_ = "base_link";
 
   // TODO(#xx): Read data from ROS2 topic /cam_scene/rgb/camera_info, it contains data from befoure the calib
@@ -74,19 +74,19 @@ void ObjectPoseDetectorNode::onDetect(
   res->poses.poses.clear();
 
   // TODO:: Read from image topic
-  std::string path_image;
-  path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
-  cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
-  if (img.empty()) {
-    RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
-    return;
-  }
+//   std::string path_image;
+//   path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
+//   cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
+//   if (img.empty()) {
+//     RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
+//     return;
+//   }
 
-  // cv::Mat img = last_rgb_;
-  // if (img.empty()) {
-  //     RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
-  //     return;
-  // }
+  const cv::Mat& img = *last_rgb_;
+  if (img.empty()) {
+      RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
+      return;
+  }
 
   // cv::imshow("get_pose", img);
   // cv::waitKey(0);

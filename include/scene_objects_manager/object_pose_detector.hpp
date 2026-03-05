@@ -57,7 +57,7 @@ private:
 
   std::vector<cv::Vec3d> rvecs, tvecs;
   std::string camera_info_path_;
-  double aruco_size_{ 0.0198 };
+  double aruco_size_{ 0.02 };
 
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;

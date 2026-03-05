@@ -20,7 +20,7 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   camera_frame_ = "cam_scene_rgb_camera_optical_frame";
   target_frame_ = "base_link";
 
-  // TODO(#xx): Read data from ROS2 topic /cam_scene/rgb/camera_info, but for now it contains data befoure calibration
+  // TODO(#xx): Read data from ROS2 topic /cam_scene/rgb/camera_info, it contains data from befoure the calib
   readCamCalib();
 
   image_topic_ = this->declare_parameter<std::string>("image_topic", "/cam_scene/rgb/image_raw");
@@ -34,6 +34,12 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   srv_ = this->create_service<scene_objects_manager::srv::DetectBlocksPoses>(
       "detect_blocks_poses",
       std::bind(&ObjectPoseDetectorNode::onDetect, this, std::placeholders::_1, std::placeholders::_2));
+
+  //   cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
+  //     "/cam_scene/rgb/camera_info",
+  //     rclcpp::SensorDataQoS(),
+  //     std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1)
+  //   )
 
   RCLCPP_INFO(this->get_logger(), "Detector node started. Subscriptionto: %s", image_topic_.c_str());
   RCLCPP_INFO(this->get_logger(), "Service ready: /detect_blocks_poses");

@@ -36,20 +36,27 @@ private:
 
   void readCamCalib();
 
+  //   void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
+
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr sub_;
+  rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr srv_;
+  //   rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_sub_;
+
   std::mutex mtx_;
   std::optional<cv::Mat> last_rgb_;
   rclcpp::Time last_rgb_stamp_;
 
-  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr sub_;
-  rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr srv_;
+  //   std::mutex calib_mutex_;
+  //   bool have_calib{false};
 
   std::string image_topic_;
   std::string output_frame_;
 
-  std::vector<cv::Vec3d> rvecs, tvecs;
-  std::string camera_info_path_;
   cv::Mat camera_matrix_;
   cv::Mat dist_coeffs_;
+
+  std::vector<cv::Vec3d> rvecs, tvecs;
+  std::string camera_info_path_;
   double aruco_size_{ 0.0198 };
 
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;

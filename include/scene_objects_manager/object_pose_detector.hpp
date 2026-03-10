@@ -35,8 +35,6 @@ private:
       const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request> req,
       std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
 
-  void readCamCalib();
-
   void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
@@ -70,5 +68,3 @@ private:
 
 }  // namespace sobjmanager
 #endif  // SCENE_OBJECTS_MANAGER__OBJECT_POSE_DETECTOR_HPP_
-
-// test

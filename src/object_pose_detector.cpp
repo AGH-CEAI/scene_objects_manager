@@ -105,7 +105,7 @@ void ObjectPoseDetectorNode::onDetect(
   cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
 
   cv::imshow("output", output_image);
-  cv::waitKey(0);
+  cv::waitKey(1);
   cv::destroyAllWindows();
 
   cv::aruco::estimatePoseSingleMarkers(markerCorners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);

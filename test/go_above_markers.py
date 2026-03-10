@@ -52,6 +52,7 @@ def main():
         target.header.stamp = director.node.get_clock().now().to_msg()
         target.header.frame_id = frame_id
         target.pose = p
+        print(f"Target z: {target.pose.position.z}")  # TODO: testing
         target.pose.position.z += z_offset
 
         target.pose.orientation.x = 1.0

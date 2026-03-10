@@ -21,7 +21,7 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   image_topic_ = this->declare_parameter<std::string>("image_topic", "/cam_scene/rgb/image_raw");
   cam_info_topic_ = this->declare_parameter<std::string>("cam_info_topic", "/cam_scene/rgb/camera_info");
   output_frame_ = this->declare_parameter<std::string>("output_frame", "base_link");
-  cam_frame_ = this->declare_parameter<std::string>("cam_scene_rgb_camera_optical_frame_cal");
+  cam_frame_ = this->declare_parameter<std::string>("cam_frame", "cam_scene_rgb_camera_optical_frame_cal");
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);

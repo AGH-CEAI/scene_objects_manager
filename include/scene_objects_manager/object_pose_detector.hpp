@@ -19,6 +19,7 @@
 #include "geometry_msgs/msg/pose_array.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "scene_objects_manager/srv/detect_blocks_poses.hpp"
+#include "sensor_msgs/msg/camera_info.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
 namespace sobjmanager {
@@ -36,18 +37,17 @@ private:
 
   void readCamCalib();
 
-  //   void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
+  void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
 
-  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr sub_;
-  rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr srv_;
-  //   rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
+  rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr detect_blocks_srv_;
+  rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_sub_;
 
   std::mutex mtx_;
   std::optional<cv::Mat> last_rgb_;
   rclcpp::Time last_rgb_stamp_;
 
-  //   std::mutex calib_mutex_;
-  //   bool have_calib{false};
+  bool camera_info_received_{ false };
 
   std::string image_topic_;
   std::string output_frame_;
@@ -64,6 +64,8 @@ private:
 
   std::string camera_frame_;
   std::string target_frame_;
+  std::string cam_info_topic_;
+  std::string cam_frame_;
 };
 
 }  // namespace sobjmanager

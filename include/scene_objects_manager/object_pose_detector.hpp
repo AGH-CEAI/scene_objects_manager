@@ -7,6 +7,7 @@
 #include <tf2_ros/transform_listener.h>
 #include <yaml-cpp/yaml.h>
 
+#include <cmath>
 #include <mutex>
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
@@ -36,10 +37,11 @@ private:
       std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
 
   void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
+  void readCamCalib();
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr detect_blocks_srv_;
-  rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_sub_;
+  // rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_sub_;
 
   std::mutex mtx_;
   std::optional<cv::Mat> last_rgb_;

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import time
-
 import rclpy
-from geometry_msgs.msg import PoseStamped
+
+from geometry_msgs.msg import PoseStamped, TransformStamped
+from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
 from scene_objects_manager.srv import DetectBlocksPoses
 from aegis_director.robot_director import RobotDirector
@@ -16,9 +16,10 @@ def main():
     service_name = "/detect_blocks_poses"
     target_frame_fallback = "base_link"
     z_offset = 0.10
-    wait_at_target_s = 3.0
 
     cli = director.node.create_client(DetectBlocksPoses, service_name)
+    static_broadcaster = StaticTransformBroadcaster(director.node)
+
     director.node.get_logger().info(f"Waiting for service {service_name} ...")
     if not cli.wait_for_service(timeout_sec=10.0):
         director.node.get_logger().error(f"Service {service_name} not available.")
@@ -47,9 +48,13 @@ def main():
     )
 
     targets: list[PoseStamped] = []
+    static_transforms: list[TransformStamped] = []
+
+    now = director.node.get_clock().now().to_msg()
+
     for i, p in enumerate(pose_array.poses):
         target = PoseStamped()
-        target.header.stamp = director.node.get_clock().now().to_msg()
+        target.header.stamp = now
         target.header.frame_id = frame_id
         target.pose = p
         target.pose.position.z += z_offset
@@ -66,20 +71,29 @@ def main():
             f"y={target.pose.position.y:.3f}, z={target.pose.position.z:.3f}"
         )
 
-    for i, t in enumerate(targets):
-        director.node.get_logger().info(f"Moving to target {i + 1}/{len(targets)} ...")
-        director.pose_move(
-            pose=t,
-            cartesian=False,
-            max_vel=0.2,
-            max_accel=0.2,
-        )
+        tf_msg = TransformStamped()
+        tf_msg.header.stamp = now
+        tf_msg.header.frame_id = frame_id
+        tf_msg.child_frame_id = f"detected_block_{i + 1}"
+
+        tf_msg.transform.translation.x = target.pose.position.x
+        tf_msg.transform.translation.y = target.pose.position.y
+        tf_msg.transform.translation.z = target.pose.position.z
+
+        tf_msg.transform.rotation = target.pose.orientation
+
+        static_transforms.append(tf_msg)
+
+    if static_transforms:
+        static_broadcaster.sendTransform(static_transforms)
         director.node.get_logger().info(
-            f"Reached target {i + 1}. Waiting {wait_at_target_s:.1f}s ..."
+            f"Published {len(static_transforms)} static TF frame(s)."
         )
-        time.sleep(wait_at_target_s)
 
     director.node.get_logger().info("Done with all targets.")
+
+    rclpy.spin_once(director.node, timeout_sec=0.5)
+
     director.node.destroy_node()
     rclpy.shutdown()
 

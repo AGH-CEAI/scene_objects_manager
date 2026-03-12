@@ -2,12 +2,25 @@
 
 namespace sobjmanager {
 
+// testing method for running in the computer
+static std::vector<double> readDataVector(const YAML::Node& root, const std::string& key) {
+  if (!root[key] || !root[key]["data"]) {
+    throw std::runtime_error("Missing key '" + key + ".data' in calibration YAML");
+  }
+  return root[key]["data"].as<std::vector<double>>();
+}
+
 ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_detector") {
   aruco_size_ = this->declare_parameter<double>("aruco_size", aruco_size_);
   image_topic_ = this->declare_parameter<std::string>("image_topic", "/cam_scene/rgb/image_raw");
   cam_info_topic_ = this->declare_parameter<std::string>("cam_info_topic", "/cam_scene/rgb/camera_info");
   output_frame_ = this->declare_parameter<std::string>("output_frame", "base_link");
   cam_frame_ = this->declare_parameter<std::string>("cam_frame", "cam_scene_rgb_camera_optical_frame_cal");
+
+  // testing
+  const auto share = ament_index_cpp::get_package_share_directory("aegis_utils");
+  camera_info_path_ = this->declare_parameter<std::string>("camera_info_path", share + "/config/scene_intrinsics.yaml");
+  readCamCalib();
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -17,10 +30,11 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
       rclcpp::SensorDataQoS(),
       std::bind(&ObjectPoseDetectorNode::imageCb, this, std::placeholders::_1));
 
-  cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
-      cam_info_topic_,
-      rclcpp::SensorDataQoS(),
-      std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
+  // testing
+  // cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
+  //     cam_info_topic_,
+  //     rclcpp::SensorDataQoS(),
+  //     std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
 
   detect_blocks_srv_ = this->create_service<scene_objects_manager::srv::DetectBlocksPoses>(
       "detect_blocks_poses",
@@ -52,32 +66,29 @@ void ObjectPoseDetectorNode::onDetect(
     RCLCPP_INFO(this->get_logger(), "start_detection=false -> returning empty PoseArray (no detection).");
     return;
   }
-  if (!camera_info_received_) {
-    RCLCPP_INFO(this->get_logger(), "Camera info not received yet.");
-    return;
-  }
+  // if (!camera_info_received_) {
+  //   RCLCPP_INFO(this->get_logger(), "Camera info not received yet.");
+  //   return;
+  // }
 
   res->poses.header.stamp = this->now();
   res->poses.header.frame_id = output_frame_;
   res->poses.poses.clear();
 
   // Read from folder - testing
-  // std::string path_image;
-  // path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
-  // cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
-  // if (img.empty()) {
-  //   RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
-  //   return;
-  // }
-  // cv::imshow("data", img);
-  // cv::waitKey(0);
-  // cv::destroyAllWindows();
-
-  cv::Mat img;
-  {
-    std::lock_guard<std::mutex> lock(mtx_);
-    img = last_rgb_.value().clone();
+  std::string path_image;
+  path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
+  cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
+  if (img.empty()) {
+    RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
+    return;
   }
+
+  // cv::Mat img;
+  // {
+  // std::lock_guard<std::mutex> lock(mtx_);
+  // img = last_rgb_.value().clone();
+  // }
 
   if (img.empty()) {
     RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
@@ -118,10 +129,22 @@ void ObjectPoseDetectorNode::onDetect(
         R.at<double>(2, 0),
         R.at<double>(2, 1),
         R.at<double>(2, 2));
-    tf2::Quaternion q;
-    tf3d.getRotation(q);
-    q.normalize();
-    pose_cam_.pose.orientation = tf2::toMsg(q);
+
+    double roll, pitch, yaw;
+    tf3d.getRPY(roll, pitch, yaw);
+
+    double step = M_PI / 2.0;
+    yaw -= step * std::round(yaw / step) - M_PI;
+
+    tf2::Quaternion q_yaw_only;
+    q_yaw_only.setRPY(0.0, 0.0, yaw);
+    q_yaw_only.normalize();
+    pose_cam_.pose.orientation = tf2::toMsg(q_yaw_only);
+
+    // tf2::Quaternion q;
+    // tf3d.getRotation(q);
+    // q.normalize();
+    // pose_cam_.pose.orientation = tf2::toMsg(q);
 
     geometry_msgs::msg::PoseStamped pose_target;
     try {
@@ -130,33 +153,67 @@ void ObjectPoseDetectorNode::onDetect(
       RCLCPP_WARN(this->get_logger(), "TF transforms failed: %s", ex.what());
       continue;
     }
+
+    pose_target.pose.position.z = 0.10;
+
     res->poses.poses.push_back(pose_target.pose);
   }
 }
 
-void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
-  if (camera_info_received_) {
-    return;
+// void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
+//   if (camera_info_received_) {
+//     return;
+//   }
+
+//   camera_matrix_ = cv::Mat(3, 3, CV_64F);
+//   for (int r = 0; r < 3; ++r) {
+//     for (int c = 0; c < 3; ++c) {
+//       camera_matrix_.at<double>(r, c) = msg->k[r * 3 + c];
+//     }
+//   }
+
+//   dist_coeffs_ = cv::Mat(1, static_cast<int>(msg->d.size()), CV_64F);
+//   for (size_t i = 0; i < msg->d.size(); ++i) {
+//     dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
+//   }
+
+//   camera_frame_ = msg->header.frame_id;
+//   camera_info_received_ = true;
+
+//   RCLCPP_INFO(this->get_logger(), "Received camera info from topic.");
+
+//   cam_info_sub_.reset();
+// }
+
+void ObjectPoseDetectorNode::readCamCalib() {
+  YAML::Node calib;
+  try {
+    calib = YAML::LoadFile(camera_info_path_);
+  } catch (const std::exception& e) {
+    throw std::runtime_error(
+        std::string("Failed to open/parse camera calib YAML '") + camera_info_path_ + "': " + e.what());
+  }
+  const auto K = readDataVector(calib, "camera_matrix");
+  const auto D = readDataVector(calib, "distortion_coefficients");
+
+  if (K.size() != 9) {
+    throw std::runtime_error("cmera_matrix.data must contains 9 elements");
+  }
+  if (D.empty()) {
+    throw std::runtime_error("distortion_coefficients.data must not be empty");
   }
 
   camera_matrix_ = cv::Mat(3, 3, CV_64F);
   for (int r = 0; r < 3; ++r) {
     for (int c = 0; c < 3; ++c) {
-      camera_matrix_.at<double>(r, c) = msg->k[r * 3 + c];
+      camera_matrix_.at<double>(r, c) = K[r * 3 + c];
     }
   }
 
-  dist_coeffs_ = cv::Mat(1, static_cast<int>(msg->d.size()), CV_64F);
-  for (size_t i = 0; i < msg->d.size(); ++i) {
-    dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
+  dist_coeffs_ = cv::Mat(1, static_cast<int>(D.size()), CV_64F);
+  for (size_t i = 0; i < D.size(); ++i) {
+    dist_coeffs_.at<double>(0, static_cast<int>(i)) = D[i];
   }
-
-  camera_frame_ = msg->header.frame_id;
-  camera_info_received_ = true;
-
-  RCLCPP_INFO(this->get_logger(), "Received camera info from topic.");
-
-  cam_info_sub_.reset();
 }
 
 }  // namespace sobjmanager

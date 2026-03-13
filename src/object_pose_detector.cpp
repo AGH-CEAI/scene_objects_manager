@@ -3,25 +3,29 @@
 namespace sobjmanager {
 
 // testing method for running at the computer
-static std::vector<double> readDataVector(const YAML::Node& root, const std::string& key) {
-  if (!root[key] || !root[key]["data"]) {
-    throw std::runtime_error("Missing key '" + key + ".data' in calibration YAML");
-  }
-  return root[key]["data"].as<std::vector<double>>();
-}
+// static std::vector<double> readDataVector(const YAML::Node& root, const std::string& key) {
+//   if (!root[key] || !root[key]["data"]) {
+//     throw std::runtime_error("Missing key '" + key + ".data' in calibration YAML");
+//   }
+//   return root[key]["data"].as<std::vector<double>>();
+// }
 
 // testing save results to the file
-void appendMarkerToYaml(const std::string& filename, int marker_id, const std::vector<cv::Point2f>& corners) {
+void appendMarkerToYaml(
+    const std::string& filename,
+    std::vector<int> marker_id,
+    const std::vector<std::vector<cv::Point2f>>& corners) {
   std::ofstream file(filename, std::ios::app);
   if (!file.is_open()) {
     throw std::runtime_error("Could not open file: " + filename);
   }
+  for (size_t i = 0; i < corners.size(); ++i) {
+    file << "  - id: " << marker_id[i] << "\n";
+    file << "    corners:\n";
 
-  file << "  - id: " << marker_id << "\n";
-  file << "    corners:\n";
-
-  for (const auto& pt : corners) {
-    file << "      - [" << pt.x << ", " << pt.y << "]\n";
+    for (const auto& pt : corners[i]) {
+      file << "      - [" << pt.x << ", " << pt.y << "]\n";
+    }
   }
 
   file.close();
@@ -59,9 +63,9 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   cam_frame_ = this->declare_parameter<std::string>("cam_frame", "cam_scene_rgb_camera_optical_frame_cal");
 
   // testing
-  const auto share = ament_index_cpp::get_package_share_directory("aegis_utils");
-  camera_info_path_ = this->declare_parameter<std::string>("camera_info_path", share + "/config/scene_intrinsics.yaml");
-  readCamCalib();
+  // const auto share = ament_index_cpp::get_package_share_directory("aegis_utils");
+  // camera_info_path_ = this->declare_parameter<std::string>("camera_info_path", share +
+  // "/config/scene_intrinsics.yaml"); readCamCalib();
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -72,10 +76,10 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
       std::bind(&ObjectPoseDetectorNode::imageCb, this, std::placeholders::_1));
 
   // testing
-  // cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
-  //     cam_info_topic_,
-  //     rclcpp::SensorDataQoS(),
-  //     std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
+  cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
+      cam_info_topic_,
+      rclcpp::SensorDataQoS(),
+      std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
 
   // testing
   initYamlFile("corners.yaml");
@@ -111,34 +115,34 @@ void ObjectPoseDetectorNode::onDetect(
     RCLCPP_INFO(this->get_logger(), "start_detection=false -> returning empty PoseArray (no detection).");
     return;
   }
-  // if (!camera_info_received_) {
-  //   RCLCPP_INFO(this->get_logger(), "Camera info not received yet.");
+  if (!camera_info_received_) {
+    RCLCPP_INFO(this->get_logger(), "Camera info not received yet.");
+    return;
+  }
+
+  // Read from folder - testing
+  // std::string path_image;
+  // path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
+  // cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
+  // if (img.empty()) {
+  //   RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
   //   return;
   // }
+
+  cv::Mat img;
+  if (last_rgb_) {
+    std::lock_guard<std::mutex> lock(mtx_);
+    img = last_rgb_.value().clone();
+  }
+
+  if (img.empty()) {
+    RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
+    return;
+  }
 
   res->poses.header.stamp = this->now();
   res->poses.header.frame_id = output_frame_;
   res->poses.poses.clear();
-
-  // Read from folder - testing
-  std::string path_image;
-  path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
-  cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
-  if (img.empty()) {
-    RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
-    return;
-  }
-
-  // cv::Mat img;
-  // {
-  // std::lock_guard<std::mutex> lock(mtx_);
-  // img = last_rgb_.value().clone();
-  // }
-
-  if (img.empty()) {
-    RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
-    return;
-  }
 
   std::vector<int> markerIds;
   std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
@@ -148,15 +152,15 @@ void ObjectPoseDetectorNode::onDetect(
 
   // testing
   if (!markerCorners.empty()) {
-    appendMarkerToYaml("corners.yaml", markerIds[0], markerCorners[0]);
+    appendMarkerToYaml("corners.yaml", markerIds, markerCorners);
   }
 
   // testing
-  cv::Mat output_image = img.clone();
-  cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
-  cv::imshow("output", output_image);
-  cv::waitKey(0);
-  cv::destroyAllWindows();
+  // cv::Mat output_image = img.clone();
+  // cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
+  // cv::imshow("output", output_image);
+  // cv::waitKey(0);
+  // cv::destroyAllWindows();
 
   cv::aruco::estimatePoseSingleMarkers(markerCorners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);
 
@@ -210,61 +214,61 @@ void ObjectPoseDetectorNode::onDetect(
   }
 }
 
-// void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
-//   if (camera_info_received_) {
-//     return;
-//   }
-
-//   camera_matrix_ = cv::Mat(3, 3, CV_64F);
-//   for (int r = 0; r < 3; ++r) {
-//     for (int c = 0; c < 3; ++c) {
-//       camera_matrix_.at<double>(r, c) = msg->k[r * 3 + c];
-//     }
-//   }
-
-//   dist_coeffs_ = cv::Mat(1, static_cast<int>(msg->d.size()), CV_64F);
-//   for (size_t i = 0; i < msg->d.size(); ++i) {
-//     dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
-//   }
-
-//   camera_frame_ = msg->header.frame_id;
-//   camera_info_received_ = true;
-
-//   RCLCPP_INFO(this->get_logger(), "Received camera info from topic.");
-
-//   cam_info_sub_.reset();
-// }
-
-// testing
-void ObjectPoseDetectorNode::readCamCalib() {
-  YAML::Node calib;
-  try {
-    calib = YAML::LoadFile(camera_info_path_);
-  } catch (const std::exception& e) {
-    throw std::runtime_error(
-        std::string("Failed to open/parse camera calib YAML '") + camera_info_path_ + "': " + e.what());
-  }
-  const auto K = readDataVector(calib, "camera_matrix");
-  const auto D = readDataVector(calib, "distortion_coefficients");
-
-  if (K.size() != 9) {
-    throw std::runtime_error("cmera_matrix.data must contains 9 elements");
-  }
-  if (D.empty()) {
-    throw std::runtime_error("distortion_coefficients.data must not be empty");
+void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
+  if (camera_info_received_) {
+    return;
   }
 
   camera_matrix_ = cv::Mat(3, 3, CV_64F);
   for (int r = 0; r < 3; ++r) {
     for (int c = 0; c < 3; ++c) {
-      camera_matrix_.at<double>(r, c) = K[r * 3 + c];
+      camera_matrix_.at<double>(r, c) = msg->k[r * 3 + c];
     }
   }
 
-  dist_coeffs_ = cv::Mat(1, static_cast<int>(D.size()), CV_64F);
-  for (size_t i = 0; i < D.size(); ++i) {
-    dist_coeffs_.at<double>(0, static_cast<int>(i)) = D[i];
+  dist_coeffs_ = cv::Mat(1, static_cast<int>(msg->d.size()), CV_64F);
+  for (size_t i = 0; i < msg->d.size(); ++i) {
+    dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
   }
+
+  camera_frame_ = msg->header.frame_id;
+  camera_info_received_ = true;
+
+  RCLCPP_INFO(this->get_logger(), "Received camera info from topic.");
+
+  cam_info_sub_.reset();
 }
+
+// testing
+// void ObjectPoseDetectorNode::readCamCalib() {
+//   YAML::Node calib;
+//   try {
+//     calib = YAML::LoadFile(camera_info_path_);
+//   } catch (const std::exception& e) {
+//     throw std::runtime_error(
+//         std::string("Failed to open/parse camera calib YAML '") + camera_info_path_ + "': " + e.what());
+//   }
+//   const auto K = readDataVector(calib, "camera_matrix");
+//   const auto D = readDataVector(calib, "distortion_coefficients");
+
+//   if (K.size() != 9) {
+//     throw std::runtime_error("cmera_matrix.data must contains 9 elements");
+//   }
+//   if (D.empty()) {
+//     throw std::runtime_error("distortion_coefficients.data must not be empty");
+//   }
+
+//   camera_matrix_ = cv::Mat(3, 3, CV_64F);
+//   for (int r = 0; r < 3; ++r) {
+//     for (int c = 0; c < 3; ++c) {
+//       camera_matrix_.at<double>(r, c) = K[r * 3 + c];
+//     }
+//   }
+
+//   dist_coeffs_ = cv::Mat(1, static_cast<int>(D.size()), CV_64F);
+//   for (size_t i = 0; i < D.size(); ++i) {
+//     dist_coeffs_.at<double>(0, static_cast<int>(i)) = D[i];
+//   }
+// }
 
 }  // namespace sobjmanager

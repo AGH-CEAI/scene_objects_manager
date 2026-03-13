@@ -8,8 +8,10 @@
 #include <yaml-cpp/yaml.h>
 
 #include <cmath>
+#include <fstream>
 #include <mutex>
 #include <opencv2/aruco.hpp>
+#include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <optional>
 #include <stdexcept>
@@ -57,7 +59,7 @@ private:
 
   std::vector<cv::Vec3d> rvecs, tvecs;
   std::string camera_info_path_;
-  double aruco_size_{ 0.02 };
+  double aruco_size_;
 
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;

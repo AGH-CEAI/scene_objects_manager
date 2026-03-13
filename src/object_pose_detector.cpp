@@ -2,7 +2,7 @@
 
 namespace sobjmanager {
 
-// testing method for running in the computer
+// testing method for running at the computer
 static std::vector<double> readDataVector(const YAML::Node& root, const std::string& key) {
   if (!root[key] || !root[key]["data"]) {
     throw std::runtime_error("Missing key '" + key + ".data' in calibration YAML");
@@ -10,8 +10,49 @@ static std::vector<double> readDataVector(const YAML::Node& root, const std::str
   return root[key]["data"].as<std::vector<double>>();
 }
 
+// testing save results to the file
+void appendMarkerToYaml(const std::string& filename, int marker_id, const std::vector<cv::Point2f>& corners) {
+  std::ofstream file(filename, std::ios::app);
+  if (!file.is_open()) {
+    throw std::runtime_error("Could not open file: " + filename);
+  }
+
+  file << "  - id: " << marker_id << "\n";
+  file << "    corners:\n";
+
+  for (const auto& pt : corners) {
+    file << "      - [" << pt.x << ", " << pt.y << "]\n";
+  }
+
+  file.close();
+}
+
+void appendTvecToYaml(const std::string& filename, const std::vector<cv::Vec3d> tvec) {
+  std::ofstream file(filename, std::ios::app);
+  if (!file.is_open()) {
+    throw std::runtime_error("Could not open file: " + filename);
+  }
+  file << "    tvec:\n";
+
+  for (const auto& t : tvec) {
+    file << "      - [" << t[0] << ", " << t[1] << ", " << t[2] << "]\n";
+  }
+
+  file.close();
+}
+
+void initYamlFile(const std::string& filename) {
+  std::ofstream file(filename);
+  if (!file.is_open()) {
+    throw std::runtime_error("Could not create file: " + filename);
+  }
+
+  file << "markers:\n";
+  file.close();
+}
+
 ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_detector") {
-  aruco_size_ = this->declare_parameter<double>("aruco_size", aruco_size_);
+  aruco_size_ = this->declare_parameter<double>("aruco_size", 0.02);
   image_topic_ = this->declare_parameter<std::string>("image_topic", "/cam_scene/rgb/image_raw");
   cam_info_topic_ = this->declare_parameter<std::string>("cam_info_topic", "/cam_scene/rgb/camera_info");
   output_frame_ = this->declare_parameter<std::string>("output_frame", "base_link");
@@ -35,6 +76,10 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   //     cam_info_topic_,
   //     rclcpp::SensorDataQoS(),
   //     std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
+
+  // testing
+  initYamlFile("corners.yaml");
+  initYamlFile("tvecs.yaml");
 
   detect_blocks_srv_ = this->create_service<scene_objects_manager::srv::DetectBlocksPoses>(
       "detect_blocks_poses",
@@ -101,14 +146,24 @@ void ObjectPoseDetectorNode::onDetect(
   cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
   cv::aruco::detectMarkers(img, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
 
+  // testing
+  if (!markerCorners.empty()) {
+    appendMarkerToYaml("corners.yaml", markerIds[0], markerCorners[0]);
+  }
+
+  // testing
   cv::Mat output_image = img.clone();
   cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
-
   cv::imshow("output", output_image);
   cv::waitKey(0);
   cv::destroyAllWindows();
 
   cv::aruco::estimatePoseSingleMarkers(markerCorners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);
+
+  // testing
+  if (!tvecs.empty()) {
+    appendTvecToYaml("tvecs.yaml", tvecs);
+  }
 
   for (size_t i = 0; i < markerIds.size(); i++) {
     geometry_msgs::msg::PoseStamped pose_cam_;
@@ -134,17 +189,12 @@ void ObjectPoseDetectorNode::onDetect(
     tf3d.getRPY(roll, pitch, yaw);
 
     double step = M_PI / 2.0;
-    yaw -= step * std::round(yaw / step) - M_PI;
+    yaw -= step * std::round(yaw / step) - M_PI / 2;
 
     tf2::Quaternion q_yaw_only;
     q_yaw_only.setRPY(0.0, 0.0, yaw);
     q_yaw_only.normalize();
     pose_cam_.pose.orientation = tf2::toMsg(q_yaw_only);
-
-    // tf2::Quaternion q;
-    // tf3d.getRotation(q);
-    // q.normalize();
-    // pose_cam_.pose.orientation = tf2::toMsg(q);
 
     geometry_msgs::msg::PoseStamped pose_target;
     try {
@@ -185,6 +235,7 @@ void ObjectPoseDetectorNode::onDetect(
 //   cam_info_sub_.reset();
 // }
 
+// testing
 void ObjectPoseDetectorNode::readCamCalib() {
   YAML::Node calib;
   try {

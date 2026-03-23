@@ -17,5 +17,25 @@ Check the following messages definitions:
 | `shape_msgs/msg/SolidPrimitive.msg`      | [link](https://github.com/ros2/common_interfaces/blob/humble/shape_msgs/msg/SolidPrimitive.msg) |
 
 
+## Block detection service (based on ArUco markers)
+This service detects blocks marked with ArUco markers using scene camera and returns their poses.
+
+### Service description
+The `/detect_blocks_poses` service provides the poses of all detected blocks in the scene.
+- Service name: `detect_blocks_poses`
+- Service type: `scene_objects_manager/srv/DetectBlocksPoses`
+- Response: `geometry_msgs/msg/PoseArray`
+
+The response contains a list of poses (`PoseArray`), where each pose corresponds to a detected block in the camera frame.
+
+### Example usage:
+```bash
+ros2 service call /detect_blocks_poses scene_objects_manager/srv/DetectBlocksPoses "{detect: true}"
+```
+
 ## Libraries used
 - [argparse](https://github.com/p-ranav/argparse) (MIT License)
+
+## Tests
+- `detect_all_markers.py` - is publishing static transform to the tf of detected blocks.
+- `go_above_markers.py` - is moving the robot above the detected markers.

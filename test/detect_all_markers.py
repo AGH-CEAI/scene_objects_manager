@@ -59,11 +59,6 @@ def main():
         target.pose = p
         target.pose.position.z += z_offset
 
-        # target.pose.orientation.x = 1.0
-        # target.pose.orientation.y = 0.000651933
-        # target.pose.orientation.z = 0.000017838
-        # target.pose.orientation.w = 0.000445749
-
         targets.append(target)
 
         director.node.get_logger().info(

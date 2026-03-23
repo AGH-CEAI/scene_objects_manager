@@ -5,6 +5,7 @@
   <version>0.0.0</version>
   <description>Node for managing objects within MoveIt2 PlanningSceneInterface.</description>
   <maintainer email="mac.aleksandrowicz@gmail.com">Maciej Aleksandrowicz</maintainer>
+  <maintainer email="antonio.radominski@gmail.com">Antoni Radomiński-Lasek</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

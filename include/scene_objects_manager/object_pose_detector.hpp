@@ -39,7 +39,6 @@ private:
       std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
 
   void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
-  void readCamCalib();
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr detect_blocks_srv_;
@@ -48,26 +47,21 @@ private:
   std::mutex mtx_;
   std::optional<cv::Mat> last_rgb_;
   rclcpp::Time last_rgb_stamp_;
-
   bool camera_info_received_{ false };
 
   std::string image_topic_;
+  std::string cam_info_topic_;
+  std::string cam_frame_;
   std::string output_frame_;
+  double aruco_size_;
 
   cv::Mat camera_matrix_;
   cv::Mat dist_coeffs_;
 
   std::vector<cv::Vec3d> rvecs, tvecs;
-  std::string camera_info_path_;
-  double aruco_size_;
 
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
-
-  std::string camera_frame_;
-  std::string target_frame_;
-  std::string cam_info_topic_;
-  std::string cam_frame_;
 };
 
 }  // namespace sobjmanager

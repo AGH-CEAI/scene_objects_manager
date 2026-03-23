@@ -2,70 +2,12 @@
 
 namespace sobjmanager {
 
-// testing method for running at the computer
-// static std::vector<double> readDataVector(const YAML::Node& root, const std::string& key) {
-//   if (!root[key] || !root[key]["data"]) {
-//     throw std::runtime_error("Missing key '" + key + ".data' in calibration YAML");
-//   }
-//   return root[key]["data"].as<std::vector<double>>();
-// }
-
-// testing save results to the file
-void appendMarkerToYaml(
-    const std::string& filename,
-    std::vector<int> marker_id,
-    const std::vector<std::vector<cv::Point2f>>& corners) {
-  std::ofstream file(filename, std::ios::app);
-  if (!file.is_open()) {
-    throw std::runtime_error("Could not open file: " + filename);
-  }
-  for (size_t i = 0; i < corners.size(); ++i) {
-    file << "  - id: " << marker_id[i] << "\n";
-    file << "    corners:\n";
-
-    for (const auto& pt : corners[i]) {
-      file << "      - [" << pt.x << ", " << pt.y << "]\n";
-    }
-  }
-
-  file.close();
-}
-
-void appendTvecToYaml(const std::string& filename, const std::vector<cv::Vec3d> tvec) {
-  std::ofstream file(filename, std::ios::app);
-  if (!file.is_open()) {
-    throw std::runtime_error("Could not open file: " + filename);
-  }
-  file << "    tvec:\n";
-
-  for (const auto& t : tvec) {
-    file << "      - [" << t[0] << ", " << t[1] << ", " << t[2] << "]\n";
-  }
-
-  file.close();
-}
-
-void initYamlFile(const std::string& filename) {
-  std::ofstream file(filename);
-  if (!file.is_open()) {
-    throw std::runtime_error("Could not create file: " + filename);
-  }
-
-  file << "markers:\n";
-  file.close();
-}
-
 ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_detector") {
   aruco_size_ = this->declare_parameter<double>("aruco_size", 0.02);
   image_topic_ = this->declare_parameter<std::string>("image_topic", "/cam_scene/rgb/image_raw");
   cam_info_topic_ = this->declare_parameter<std::string>("cam_info_topic", "/cam_scene/rgb/camera_info");
   output_frame_ = this->declare_parameter<std::string>("output_frame", "base_link");
   cam_frame_ = this->declare_parameter<std::string>("cam_frame", "cam_scene_rgb_camera_optical_frame_cal");
-
-  // testing
-  // const auto share = ament_index_cpp::get_package_share_directory("aegis_utils");
-  // camera_info_path_ = this->declare_parameter<std::string>("camera_info_path", share +
-  // "/config/scene_intrinsics.yaml"); readCamCalib();
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -75,15 +17,10 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
       rclcpp::SensorDataQoS(),
       std::bind(&ObjectPoseDetectorNode::imageCb, this, std::placeholders::_1));
 
-  // testing
   cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
       cam_info_topic_,
       rclcpp::SensorDataQoS(),
       std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
-
-  // testing
-  initYamlFile("corners.yaml");
-  initYamlFile("tvecs.yaml");
 
   detect_blocks_srv_ = this->create_service<scene_objects_manager::srv::DetectBlocksPoses>(
       "detect_blocks_poses",
@@ -120,15 +57,6 @@ void ObjectPoseDetectorNode::onDetect(
     return;
   }
 
-  // Read from folder - testing
-  // std::string path_image;
-  // path_image = "/home/antrad/ceai_ws/getpos_data/scene_4_blocks.png";
-  // cv::Mat img = cv::imread(path_image, cv::IMREAD_COLOR);
-  // if (img.empty()) {
-  //   RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
-  //   return;
-  // }
-
   cv::Mat img;
   if (last_rgb_) {
     std::lock_guard<std::mutex> lock(mtx_);
@@ -150,24 +78,7 @@ void ObjectPoseDetectorNode::onDetect(
   cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
   cv::aruco::detectMarkers(img, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
 
-  // testing
-  if (!markerCorners.empty()) {
-    appendMarkerToYaml("corners.yaml", markerIds, markerCorners);
-  }
-
-  // testing
-  // cv::Mat output_image = img.clone();
-  // cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
-  // cv::imshow("output", output_image);
-  // cv::waitKey(0);
-  // cv::destroyAllWindows();
-
   cv::aruco::estimatePoseSingleMarkers(markerCorners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);
-
-  // testing
-  if (!tvecs.empty()) {
-    appendTvecToYaml("tvecs.yaml", tvecs);
-  }
 
   for (size_t i = 0; i < markerIds.size(); i++) {
     geometry_msgs::msg::PoseStamped pose_cam_;
@@ -231,44 +142,12 @@ void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::Sh
     dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
   }
 
-  camera_frame_ = msg->header.frame_id;
+  cam_frame_ = msg->header.frame_id;
   camera_info_received_ = true;
 
   RCLCPP_INFO(this->get_logger(), "Received camera info from topic.");
 
   cam_info_sub_.reset();
 }
-
-// testing
-// void ObjectPoseDetectorNode::readCamCalib() {
-//   YAML::Node calib;
-//   try {
-//     calib = YAML::LoadFile(camera_info_path_);
-//   } catch (const std::exception& e) {
-//     throw std::runtime_error(
-//         std::string("Failed to open/parse camera calib YAML '") + camera_info_path_ + "': " + e.what());
-//   }
-//   const auto K = readDataVector(calib, "camera_matrix");
-//   const auto D = readDataVector(calib, "distortion_coefficients");
-
-//   if (K.size() != 9) {
-//     throw std::runtime_error("cmera_matrix.data must contains 9 elements");
-//   }
-//   if (D.empty()) {
-//     throw std::runtime_error("distortion_coefficients.data must not be empty");
-//   }
-
-//   camera_matrix_ = cv::Mat(3, 3, CV_64F);
-//   for (int r = 0; r < 3; ++r) {
-//     for (int c = 0; c < 3; ++c) {
-//       camera_matrix_.at<double>(r, c) = K[r * 3 + c];
-//     }
-//   }
-
-//   dist_coeffs_ = cv::Mat(1, static_cast<int>(D.size()), CV_64F);
-//   for (size_t i = 0; i < D.size(); ++i) {
-//     dist_coeffs_.at<double>(0, static_cast<int>(i)) = D[i];
-//   }
-// }
 
 }  // namespace sobjmanager

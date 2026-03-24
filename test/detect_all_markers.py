@@ -15,7 +15,7 @@ def main():
 
     service_name = "/detect_blocks_poses"
     target_frame_fallback = "base_link"
-    z_offset = 0.01
+    z_offset = 0.0
 
     cli = director.node.create_client(DetectBlocksPoses, service_name)
     static_broadcaster = StaticTransformBroadcaster(director.node)

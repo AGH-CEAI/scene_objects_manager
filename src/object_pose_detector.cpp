@@ -119,7 +119,7 @@ void ObjectPoseDetectorNode::onDetect(
       continue;
     }
 
-    pose_target.pose.position.z = 0.10;
+    pose_target.pose.position.z = 0.095;
 
     res->poses.poses.push_back(pose_target.pose);
   }
@@ -142,10 +142,7 @@ void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::Sh
     dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
   }
 
-  cam_frame_ = msg->header.frame_id;
   camera_info_received_ = true;
-
-  RCLCPP_INFO(this->get_logger(), "Received camera info from topic.");
 
   cam_info_sub_.reset();
 }

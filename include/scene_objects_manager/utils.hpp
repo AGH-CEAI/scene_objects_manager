@@ -1,5 +1,5 @@
-#ifndef UTILS_HPP_INCLUDED
-#define UTILS_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__UTILS_HPP_
+#define SCENE_OBJECTS_MANAGER__UTILS_HPP_
 #include <map>
 
 template <typename K, typename V>
@@ -10,4 +10,4 @@ static std::map<V, K> reverse_map(const std::map<K, V>& m) {
   return r;
 }
 
-#endif  // UTILS_HPP_INCLUDED
+#endif  // SCENE_OBJECTS_MANAGER__UTILS_HPP_

@@ -1,5 +1,5 @@
-#ifndef YAML_PARSER_HPP_INCLUDED
-#define YAML_PARSER_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__YAML_PARSER_HPP_
+#define SCENE_OBJECTS_MANAGER__YAML_PARSER_HPP_
 #include <filesystem>
 #include <vector>
 
@@ -10,4 +10,4 @@ namespace sobjmanager {
 std::vector<SceneObject> load_scene_objects_from_yaml(std::filesystem::path path);
 
 }  // namespace sobjmanager
-#endif  // YAML_PARSER_HPP_INCLUDED
+#endif  // SCENE_OBJECTS_MANAGER__YAML_PARSER_HPP_

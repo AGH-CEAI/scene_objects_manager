@@ -1,159 +1,61 @@
-# Config based on:
-# https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/blob/humble/.pre-commit-config.yaml
-# To use:
-#
-#     pre-commit run -a
-#
-# Or:
-#
-#     pre-commit install  # (runs every time you commit in git)
-#
-# To update this file:
-#
-#     pre-commit autoupdate
-#
-# See https://github.com/pre-commit/pre-commit
-
 repos:
-  # Standard hooks
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+-   repo: https://gitlab.com/vojko.pribudic.foss/pre-commit-update
+    rev: v0.9.0
     hooks:
-      - id: check-added-large-files
-      - id: check-ast
-      - id: check-byte-order-marker # Forbid UTF-8 byte-order markers
-      - id: check-case-conflict
-      - id: check-docstring-first
-      - id: check-merge-conflict
-      - id: check-symlinks
-      - id: check-xml
-      - id: check-yaml
-      - id: debug-statements
-      - id: destroyed-symlinks
-      - id: detect-private-key
-      - id: end-of-file-fixer
-      - id: mixed-line-ending
-      - id: trailing-whitespace
+    -   id: pre-commit-update
 
-  # Python hooks
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-      - id: pyupgrade
-        args: [--py310-plus]
+    -   id: check-added-large-files
+    -   id: check-ast
+    -   id: check-case-conflict
+    -   id: check-executables-have-shebangs
+    -   id: check-json
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: check-toml
+    -   id: check-xml
+    -   id: debug-statements
+    -   id: destroyed-symlinks
+    -   id: detect-private-key
+    -   id: end-of-file-fixer
+    -   id: fix-byte-order-marker
+    -   id: mixed-line-ending
+    -   id: trailing-whitespace
+    -   id: check-yaml
+    -   id: pretty-format-json
+        args: ["--autofix", "--no-sort-keys", "--indent", "2"]
 
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
     hooks:
-      - id: black
-        args: ["--line-length=100"]
+    -   id: codespell
+        args: [-w]
 
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.8
     hooks:
-      - id: pydocstyle
-        args:
-          [
-            "--ignore=D100,D101,D102,D103,D104,D105,D106,D107,D203,D212,D401,D404",
-          ]
+    -   id: ruff-check
+        args: [--fix, --exit-non-zero-on-fix]
+    -   id: ruff-format
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 3.9.0
+-   repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
     hooks:
-      - id: flake8
-        args: ["--ignore=E501,W503"]
+    -   id: cmake-format
+    -   id: cmake-lint
 
-  # CPP hooks
-  # The same options as in ament_cppcheck are used, but its not working...
-  #- repo: https://github.com/pocc/pre-commit-hooks
-  #rev: v1.1.1
-  #hooks:
-  #- id: cppcheck
-  #args: ['--error-exitcode=1', '-f', '--inline-suppr', '-q', '-rp', '--suppress=internalAstError', '--suppress=unknownMacro', '--verbose']
-
-  - repo: local
+-   repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v22.1.1
     hooks:
-      - id: ament_cppcheck
-        name: ament_cppcheck
-        description: Static code analysis of C/C++ files.
-        stages: [commit]
-        entry: env AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS=1 ament_cppcheck
-        language: system
-        files: \.(h\+\+|h|hh|hxx|hpp|cuh|c|cc|cpp|cu|c\+\+|cxx|tpp|txx)$
+    -   id: clang-format
+        types_or: [c++, proto]
 
-  # Maybe use https://github.com/cpplint/cpplint instead
-  # TODO(macale) run it before release
-  # - repo: local
-  #   hooks:
-  #     - id: ament_cpplint
-  #       name: ament_cpplint
-  #       description: Static code analysis of C/C++ files.
-  #       stages: [commit]
-  #       entry: ament_cpplint
-  #       language: system
-  #       files: \.(h\+\+|h|hh|hxx|hpp|cuh|c|cc|cpp|cu|c\+\+|cxx|tpp|txx)$
-  #       args: ["--linelength=120"]
-
-  - repo: local
+-   repo: https://github.com/tier4/pre-commit-hooks-ros
+    rev: v0.10.2
     hooks:
-      - id: clang-format
-        name: clang-format
-        description: Format files with ClangFormat.
-        entry: clang-format-14
-        language: system
-        files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
-        args: ["-fallback-style=none", "-i"]
-
-  # Cmake hooks
-  - repo: https://github.com/cheshirekow/cmake-format-precommit
-    rev: v0.6.10
-    hooks:
-    # Note: Do not use format - the wrapping function is bugged
-    # https://github.com/cheshirekow/cmake_format/issues/180
-    - id: cmake-lint
-      args: ["--disable", "C0103"]
-  - repo: local
-    hooks:
-      - id: ament_lint_cmake
-        name: ament_lint_cmake
-        description: Check format of CMakeLists.txt files.
-        stages: [commit]
-        entry: ament_lint_cmake
-        args: ["--filter=-readability/wonkycase"]
-        language: system
-        files: CMakeLists.txt$
-
-  # Copyright
-  # TODO: turn on on public code release
-  # - repo: local
-  #   hooks:
-  #     - id: ament_copyright
-  #       name: ament_copyright
-  #       description: Check if copyright notice is available in all files.
-  #       stages: [commit]
-  #       entry: ament_copyright
-  #       language: system
-  #       args: ['--exclude', 'ur_robot_driver/doc/conf.py']
-
-  # Docs - RestructuredText hooks
-  - repo: https://github.com/PyCQA/doc8
-    rev: 0.9.0a1
-    hooks:
-      - id: doc8
-        args: ["--max-line-length=100", "--ignore=D001"]
-
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.8.0
-    hooks:
-      - id: rst-backticks
-      - id: rst-directive-colons
-      - id: rst-inline-touching-normal
-
-  # Spellcheck in comments and docs
-  # skipping of *.svg files is not working...
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.0.0
-    hooks:
-      - id: codespell
-        args: ["--write-changes"]
-        exclude: \.(svg|pyc|drawio)$
+    -   id: prettier-xacro
+    -   id: prettier-package-xml
+    -   id: ros-include-guard
+    -   id: sort-package-xml

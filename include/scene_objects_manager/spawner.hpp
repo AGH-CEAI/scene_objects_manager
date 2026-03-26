@@ -1,5 +1,5 @@
-#ifndef OBJECT_SPAWNER_HPP_INCLUDED
-#define OBJECT_SPAWNER_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__SPAWNER_HPP_
+#define SCENE_OBJECTS_MANAGER__SPAWNER_HPP_
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <string>
@@ -25,4 +25,4 @@ private:
 };
 
 }  // namespace sobjmanager
-#endif  // OBJECT_SPAWNER_HPP_INCLUDED
+#endif  // SCENE_OBJECTS_MANAGER__SPAWNER_HPP_

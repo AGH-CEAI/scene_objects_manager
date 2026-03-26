@@ -1,5 +1,5 @@
-#ifndef SCENE_OBJECT_HPP_INCLUDED
-#define SCENE_OBJECT_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__SCENE_OBJECT_HPP_
+#define SCENE_OBJECTS_MANAGER__SCENE_OBJECT_HPP_
 #include <geometry_msgs/msg/pose.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
@@ -32,4 +32,4 @@ struct SceneObject {
 };
 
 }  // namespace sobjmanager
-#endif  // SCENE_OBJECT_HPP_INCLUDED
+#endif  // SCENE_OBJECTS_MANAGER__SCENE_OBJECT_HPP_

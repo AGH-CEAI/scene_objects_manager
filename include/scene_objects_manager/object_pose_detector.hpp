@@ -51,6 +51,7 @@ class ObjectPoseDetectorNode : public rclcpp::Node {
   std::optional<cv::Mat> last_rgb_;
   rclcpp::Time last_rgb_stamp_;
   bool camera_info_received_;
+  float z_offset_of_block_;
 
   std::string image_topic_;
   std::string cam_info_topic_;

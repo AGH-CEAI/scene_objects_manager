@@ -10,6 +10,7 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   cam_frame_ = this->declare_parameter<std::string>("cam_frame", "cam_scene_rgb_camera_optical_frame_cal");
 
   camera_info_received_ = false;
+  z_offset_of_block_ = 0.095;
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -74,6 +75,13 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
 
   cv::aruco::estimatePoseSingleMarkers(marker_corners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs_, tvecs_);
 
+  cv::Mat R;
+  double roll = 0.0;
+  double pitch = 0.0;
+  double yaw = 0.0;
+  double k_angle_step = M_PI / 2.0;
+  tf2::Quaternion q_yaw_only;
+
   for (size_t i = 0; i < marker_ids.size(); i++) {
     geometry_msgs::msg::PoseStamped pose_cam_;
     pose_cam_.header.stamp = this->now();
@@ -81,19 +89,15 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
     pose_cam_.pose.position.x = tvecs_[i][0];
     pose_cam_.pose.position.y = tvecs_[i][1];
     pose_cam_.pose.position.z = tvecs_[i][2];
-    cv::Mat R;
     cv::Rodrigues(rvecs_[i], R);
     tf2::Matrix3x3 tf3d(R.at<double>(0, 0), R.at<double>(0, 1), R.at<double>(0, 2), R.at<double>(1, 0),
                         R.at<double>(1, 1), R.at<double>(1, 2), R.at<double>(2, 0), R.at<double>(2, 1),
                         R.at<double>(2, 2));
 
-    double roll, pitch, yaw;
     tf3d.getRPY(roll, pitch, yaw);
 
-    double step = M_PI / 2.0;
-    yaw -= step * std::round(yaw / step) - step;
+    yaw -= k_angle_step * std::round(yaw / k_angle_step) - k_angle_step;
 
-    tf2::Quaternion q_yaw_only;
     q_yaw_only.setRPY(0.0, 0.0, yaw);
     q_yaw_only.normalize();
     pose_cam_.pose.orientation = tf2::toMsg(q_yaw_only);
@@ -106,16 +110,15 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
       continue;
     }
 
-    pose_target.pose.position.z = 0.095;
+    pose_target.pose.position.z = z_offset_of_block_;
 
     res->poses.poses.push_back(pose_target.pose);
   }
 }
 
 void ObjectPoseDetectorNode::camera_info_cb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
-  if (camera_info_received_) {
+  if (camera_info_received_)
     return;
-  }
 
   camera_matrix_ = cv::Mat(3, 3, CV_64F);
   for (int r = 0; r < 3; ++r) {

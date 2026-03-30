@@ -35,7 +35,7 @@ private:
   void imageCb(const sensor_msgs::msg::Image::SharedPtr msg);
 
   void onDetect(
-      const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request> req,
+      const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request>,
       std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
 
   void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);

@@ -46,12 +46,8 @@ void ObjectPoseDetectorNode::imageCb(const sensor_msgs::msg::Image::SharedPtr ms
 }
 
 void ObjectPoseDetectorNode::onDetect(
-    const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request> req,
+    const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request>,
     std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res) {
-  if (!req->detect) {
-    RCLCPP_INFO(this->get_logger(), "start_detection=false -> returning empty PoseArray (no detection).");
-    return;
-  }
   if (!camera_info_received_) {
     RCLCPP_INFO(this->get_logger(), "Camera info not received yet.");
     return;

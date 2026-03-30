@@ -121,14 +121,14 @@ void ObjectPoseDetectorNode::camera_info_cb(const sensor_msgs::msg::CameraInfo::
     return;
 
   camera_matrix_ = cv::Mat(3, 3, CV_64F);
-  for (int row = 0; row < 3; ++row) {
-    for (int col = 0; col < 3; ++col) {
+  for (int row = 0; row < 3; row++) {
+    for (int col = 0; col < 3; col++) {
       camera_matrix_.at<double>(row, col) = msg->k[row * 3 + col];
     }
   }
 
   dist_coeffs_ = cv::Mat(1, static_cast<int>(msg->d.size()), CV_64F);
-  for (size_t i = 0; i < msg->d.size(); ++i) {
+  for (size_t i = 0; i < msg->d.size(); i++) {
     dist_coeffs_.at<double>(0, static_cast<int>(i)) = msg->d[i];
   }
 

@@ -27,6 +27,8 @@
 #include <sensor_msgs/msg/image.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+using DetectBlocksPosesSrv = scene_objects_manager::srv::DetectBlocksPoses;
+
 namespace sobjmanager {
 
 class ObjectPoseDetectorNode : public rclcpp::Node {
@@ -34,12 +36,12 @@ class ObjectPoseDetectorNode : public rclcpp::Node {
   ObjectPoseDetectorNode();
 
  private:
-  void imageCb(const sensor_msgs::msg::Image::SharedPtr msg);
+  void image_cb(const sensor_msgs::msg::Image::SharedPtr msg);
 
-  void onDetect(const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request>,
-                std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res);
+  void on_detect(const std::shared_ptr<DetectBlocksPosesSrv::Request>,
+                 std::shared_ptr<DetectBlocksPosesSrv::Response> res);
 
-  void cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
+  void camera_info_cb(const sensor_msgs::msg::CameraInfo::SharedPtr msg);
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
   rclcpp::Service<scene_objects_manager::srv::DetectBlocksPoses>::SharedPtr detect_blocks_srv_;
@@ -48,7 +50,7 @@ class ObjectPoseDetectorNode : public rclcpp::Node {
   std::mutex mtx_;
   std::optional<cv::Mat> last_rgb_;
   rclcpp::Time last_rgb_stamp_;
-  bool camera_info_received_{false};
+  bool camera_info_received_;
 
   std::string image_topic_;
   std::string cam_info_topic_;

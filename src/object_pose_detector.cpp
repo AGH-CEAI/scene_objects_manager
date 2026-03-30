@@ -9,28 +9,27 @@ ObjectPoseDetectorNode::ObjectPoseDetectorNode() : rclcpp::Node("object_pose_det
   output_frame_ = this->declare_parameter<std::string>("output_frame", "base_link");
   cam_frame_ = this->declare_parameter<std::string>("cam_frame", "cam_scene_rgb_camera_optical_frame_cal");
 
+  camera_info_received_ = false;
+
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
   image_sub_ = this->create_subscription<sensor_msgs::msg::Image>(
-      image_topic_,
-      rclcpp::SensorDataQoS(),
-      std::bind(&ObjectPoseDetectorNode::imageCb, this, std::placeholders::_1));
+      image_topic_, rclcpp::SensorDataQoS(), std::bind(&ObjectPoseDetectorNode::image_cb, this, std::placeholders::_1));
 
   cam_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
-      cam_info_topic_,
-      rclcpp::SensorDataQoS(),
-      std::bind(&ObjectPoseDetectorNode::cameraInfoCb, this, std::placeholders::_1));
+      cam_info_topic_, rclcpp::SensorDataQoS(),
+      std::bind(&ObjectPoseDetectorNode::camera_info_cb, this, std::placeholders::_1));
 
   detect_blocks_srv_ = this->create_service<scene_objects_manager::srv::DetectBlocksPoses>(
       "detect_blocks_poses",
-      std::bind(&ObjectPoseDetectorNode::onDetect, this, std::placeholders::_1, std::placeholders::_2));
+      std::bind(&ObjectPoseDetectorNode::on_detect, this, std::placeholders::_1, std::placeholders::_2));
 
   RCLCPP_INFO(this->get_logger(), "Detector node started. Subscriptionto: %s", image_topic_.c_str());
   RCLCPP_INFO(this->get_logger(), "Service ready: /detect_blocks_poses");
 }
 
-void ObjectPoseDetectorNode::imageCb(const sensor_msgs::msg::Image::SharedPtr msg) {
+void ObjectPoseDetectorNode::image_cb(const sensor_msgs::msg::Image::SharedPtr msg) {
   cv_bridge::CvImageConstPtr cv_ptr;
   try {
     cv_ptr = cv_bridge::toCvShare(msg, "bgr8");
@@ -45,9 +44,8 @@ void ObjectPoseDetectorNode::imageCb(const sensor_msgs::msg::Image::SharedPtr ms
   }
 }
 
-void ObjectPoseDetectorNode::onDetect(
-    const std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Request>,
-    std::shared_ptr<scene_objects_manager::srv::DetectBlocksPoses::Response> res) {
+void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSrv::Request>,
+                                       std::shared_ptr<DetectBlocksPosesSrv::Response> res) {
   if (!camera_info_received_) {
     RCLCPP_INFO(this->get_logger(), "Camera info not received yet.");
     return;
@@ -85,16 +83,9 @@ void ObjectPoseDetectorNode::onDetect(
     pose_cam_.pose.position.z = tvecs[i][2];
     cv::Mat R;
     cv::Rodrigues(rvecs[i], R);
-    tf2::Matrix3x3 tf3d(
-        R.at<double>(0, 0),
-        R.at<double>(0, 1),
-        R.at<double>(0, 2),
-        R.at<double>(1, 0),
-        R.at<double>(1, 1),
-        R.at<double>(1, 2),
-        R.at<double>(2, 0),
-        R.at<double>(2, 1),
-        R.at<double>(2, 2));
+    tf2::Matrix3x3 tf3d(R.at<double>(0, 0), R.at<double>(0, 1), R.at<double>(0, 2), R.at<double>(1, 0),
+                        R.at<double>(1, 1), R.at<double>(1, 2), R.at<double>(2, 0), R.at<double>(2, 1),
+                        R.at<double>(2, 2));
 
     double roll, pitch, yaw;
     tf3d.getRPY(roll, pitch, yaw);
@@ -121,7 +112,7 @@ void ObjectPoseDetectorNode::onDetect(
   }
 }
 
-void ObjectPoseDetectorNode::cameraInfoCb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
+void ObjectPoseDetectorNode::camera_info_cb(const sensor_msgs::msg::CameraInfo::SharedPtr msg) {
   if (camera_info_received_) {
     return;
   }

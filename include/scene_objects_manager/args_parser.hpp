@@ -1,5 +1,5 @@
-#ifndef ARGS_PARSER_HPP_INCLUDED
-#define ARGS_PARSER_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__ARGS_PARSER_HPP_
+#define SCENE_OBJECTS_MANAGER__ARGS_PARSER_HPP_
 
 #include <filesystem>
 #include <string>
@@ -20,4 +20,4 @@ const LaunchArguments parse_args(
     const std::vector<std::string>& input_args);
 
 }  // namespace sobjmanager
-#endif  // ARGS_PARSER_HPP_INCLUDED
+#endif  // SCENE_OBJECTS_MANAGER__ARGS_PARSER_HPP_

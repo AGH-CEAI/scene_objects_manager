@@ -1,5 +1,5 @@
-#ifndef SCENE_OBJECTS_SPAWNER_HPP_INCLUDED
-#define SCENE_OBJECTS_SPAWNER_HPP_INCLUDED
+#ifndef SCENE_OBJECTS_MANAGER__SCENE_OBJECTS_MANAGER_HPP_
+#define SCENE_OBJECTS_MANAGER__SCENE_OBJECTS_MANAGER_HPP_
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -13,8 +13,8 @@ namespace sobjmanager {
 
 class SceneObjectsManager : public rclcpp::Node {
 public:
-  SceneObjectsManager() : Node("scene_objects_manager"){};
+  SceneObjectsManager() : Node("scene_objects_manager") {};
 };
 
 }  // namespace sobjmanager
-#endif  // SCENE_OBJECTS_SPAWNER_HPP_INCLUDED
+#endif  // SCENE_OBJECTS_MANAGER__SCENE_OBJECTS_MANAGER_HPP_

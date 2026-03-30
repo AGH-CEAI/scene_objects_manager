@@ -1,7 +1,7 @@
 #include "scene_objects_manager/scene_objects_manager.hpp"
-#include "scene_objects_manager/object_pose_detector.hpp"
 
 #include "scene_objects_manager/args_parser.hpp"
+#include "scene_objects_manager/object_pose_detector.hpp"
 #include "scene_objects_manager/spawner.hpp"
 #include "scene_objects_manager/yaml_parser.hpp"
 
@@ -18,19 +18,14 @@ int main(int argc, char* argv[]) {
   auto detector_node = std::make_shared<ObjectPoseDetectorNode>();
 
   auto scene_objs = load_scene_objects_from_yaml(launch_args.cfg_path);
-  RCLCPP_INFO(
-      manager_node->get_logger(),
-      "Loaded %d object(s) from the configuration file.",
-      static_cast<int>(scene_objs.size()));
+  RCLCPP_INFO(manager_node->get_logger(), "Loaded %d object(s) from the configuration file.",
+              static_cast<int>(scene_objs.size()));
 
   auto spawner = Spawner(launch_args.planning_frame_id);
   for (const auto& obj : scene_objs) {
     spawner.spawn_object(obj);
-    RCLCPP_INFO(
-        manager_node->get_logger(),
-        "Spawned new scene object \"%s\" (unique_id: %s).",
-        obj.pretty_name.c_str(),
-        obj.unique_id.c_str());
+    RCLCPP_INFO(manager_node->get_logger(), "Spawned new scene object \"%s\" (unique_id: %s).", obj.pretty_name.c_str(),
+                obj.unique_id.c_str());
   }
   RCLCPP_INFO(manager_node->get_logger(), "Spawned all objects.");
 

@@ -27,10 +27,7 @@ def main():
         rclpy.shutdown()
         return
 
-    req = DetectBlocksPoses.Request()
-    req.detect = True
-
-    future = cli.call_async(req)
+    future = cli.call_async()
     rclpy.spin_until_future_complete(director.node, future, timeout_sec=10.0)
 
     resp = future.result()

@@ -66,15 +66,15 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
   res->poses.header.frame_id = output_frame_;
   res->poses.poses.clear();
 
-  std::vector<int> markerIds;
-  std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
+  std::vector<int> marker_ids;
+  std::vector<std::vector<cv::Point2f>> marker_corners, rejected_candidates;
   cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
   cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-  cv::aruco::detectMarkers(img, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
+  cv::aruco::detectMarkers(img, dictionary, marker_corners, marker_ids, parameters, rejected_candidates);
 
-  cv::aruco::estimatePoseSingleMarkers(markerCorners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);
+  cv::aruco::estimatePoseSingleMarkers(marker_corners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);
 
-  for (size_t i = 0; i < markerIds.size(); i++) {
+  for (size_t i = 0; i < marker_ids.size(); i++) {
     geometry_msgs::msg::PoseStamped pose_cam_;
     pose_cam_.header.stamp = this->now();
     pose_cam_.header.frame_id = cam_frame_;

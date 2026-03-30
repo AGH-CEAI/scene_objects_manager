@@ -72,17 +72,17 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
   cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
   cv::aruco::detectMarkers(img, dictionary, marker_corners, marker_ids, parameters, rejected_candidates);
 
-  cv::aruco::estimatePoseSingleMarkers(marker_corners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs, tvecs);
+  cv::aruco::estimatePoseSingleMarkers(marker_corners, aruco_size_, camera_matrix_, dist_coeffs_, rvecs_, tvecs_);
 
   for (size_t i = 0; i < marker_ids.size(); i++) {
     geometry_msgs::msg::PoseStamped pose_cam_;
     pose_cam_.header.stamp = this->now();
     pose_cam_.header.frame_id = cam_frame_;
-    pose_cam_.pose.position.x = tvecs[i][0];
-    pose_cam_.pose.position.y = tvecs[i][1];
-    pose_cam_.pose.position.z = tvecs[i][2];
+    pose_cam_.pose.position.x = tvecs_[i][0];
+    pose_cam_.pose.position.y = tvecs_[i][1];
+    pose_cam_.pose.position.z = tvecs_[i][2];
     cv::Mat R;
-    cv::Rodrigues(rvecs[i], R);
+    cv::Rodrigues(rvecs_[i], R);
     tf2::Matrix3x3 tf3d(R.at<double>(0, 0), R.at<double>(0, 1), R.at<double>(0, 2), R.at<double>(1, 0),
                         R.at<double>(1, 1), R.at<double>(1, 2), R.at<double>(2, 0), R.at<double>(2, 1),
                         R.at<double>(2, 2));

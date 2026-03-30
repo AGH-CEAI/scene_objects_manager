@@ -61,7 +61,8 @@ class ObjectPoseDetectorNode : public rclcpp::Node {
   cv::Mat camera_matrix_;
   cv::Mat dist_coeffs_;
 
-  std::vector<cv::Vec3d> rvecs, tvecs;
+  std::vector<cv::Vec3d> rvecs_;
+  std::vector<cv::Vec3d> tvecs_;
 
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;

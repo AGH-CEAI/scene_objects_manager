@@ -91,7 +91,7 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
     tf3d.getRPY(roll, pitch, yaw);
 
     double step = M_PI / 2.0;
-    yaw -= step * std::round(yaw / step) - M_PI / 2;
+    yaw -= step * std::round(yaw / step) - step;
 
     tf2::Quaternion q_yaw_only;
     q_yaw_only.setRPY(0.0, 0.0, yaw);

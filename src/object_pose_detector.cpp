@@ -121,9 +121,9 @@ void ObjectPoseDetectorNode::camera_info_cb(const sensor_msgs::msg::CameraInfo::
     return;
 
   camera_matrix_ = cv::Mat(3, 3, CV_64F);
-  for (int r = 0; r < 3; ++r) {
-    for (int c = 0; c < 3; ++c) {
-      camera_matrix_.at<double>(r, c) = msg->k[r * 3 + c];
+  for (int row = 0; row < 3; ++row) {
+    for (int col = 0; col < 3; ++col) {
+      camera_matrix_.at<double>(row, col) = msg->k[row * 3 + col];
     }
   }
 

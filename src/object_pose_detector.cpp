@@ -58,7 +58,7 @@ void ObjectPoseDetectorNode::on_detect(const std::shared_ptr<DetectBlocksPosesSr
   }
 
   if (img.empty()) {
-    RCLCPP_ERROR(this->get_logger(), "cv::imread failed");
+    RCLCPP_ERROR(this->get_logger(), "Failed: no image in buffer to detect objects.");
     return;
   }
 

@@ -13,7 +13,6 @@ int main(int argc, char* argv[]) {
     return parse_args("SceneObjectsSpawner", "0.0.0", args);
   }();
 
-  // auto const node = std::make_shared<SceneObjectsManager>();
   auto manager_node = std::make_shared<SceneObjectsManager>();
   auto detector_node = std::make_shared<ObjectPoseDetectorNode>();
 
@@ -34,7 +33,6 @@ int main(int argc, char* argv[]) {
   executor_.add_node(detector_node);
   executor_.spin();
 
-  // rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }

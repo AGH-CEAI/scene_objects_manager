@@ -13,10 +13,9 @@ bool validate_launch_arguments(const LaunchArguments& args) {
   return true;
 }
 
-const LaunchArguments parse_args(
-    const std::string& program_name,
-    const std::string& program_version,
-    const std::vector<std::string>& input_args) {
+const LaunchArguments parse_args(const std::string& program_name,
+                                 const std::string& program_version,
+                                 const std::vector<std::string>& input_args) {
   argparse::ArgumentParser program(program_name, program_version, argparse::default_arguments::help);
   LaunchArguments args;
 

@@ -70,8 +70,6 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME}_node argparse yaml-cpp
                       ${OpenCV_LIBRARIES})
 
-install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
-
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
 ament_export_dependencies(rosidl_default_runtime)

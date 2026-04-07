@@ -6,25 +6,24 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-set(HW_IF_INCLUDE_DEPENDS
+set(ROS_DEPENDS
     cv_bridge
     geometry_msgs
     moveit_msgs
     moveit_ros_planning_interface
-    OpenCV
     rosidl_default_generators
     std_msgs
     sensor_msgs
     tf2
     tf2_ros
-    tf2_geometry_msgs
-    yaml-cpp)
+    tf2_geometry_msgs)
+set(PROJECT_DEPENDS OpenCV yaml-cpp ${ROS_DEPENDS})
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 
-foreach(dependency IN ITEMS ${HW_IF_INCLUDE_DEPENDS})
+foreach(dependency IN ITEMS ${PROJECT_DEPENDS})
   find_package(${dependency} REQUIRED)
 endforeach()
 
@@ -47,19 +46,8 @@ rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}_node ${cpp_typesupport_target})
 
-ament_target_dependencies(
-  ${PROJECT_NAME}_node
-  ament_index_cpp
-  moveit_ros_planning_interface
-  rclcpp
-  std_msgs
-  rclcpp
-  sensor_msgs
-  geometry_msgs
-  cv_bridge
-  tf2
-  tf2_ros
-  tf2_geometry_msgs)
+ament_target_dependencies(${PROJECT_NAME}_node ament_index_cpp rclcpp
+                          ${ROS_DEPENDS})
 
 target_include_directories(
   ${PROJECT_NAME}_node

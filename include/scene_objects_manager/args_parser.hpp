@@ -14,10 +14,9 @@ struct LaunchArguments {
 
 bool validate_launch_arguments(const LaunchArguments& args);
 
-const LaunchArguments parse_args(
-    const std::string& program_name,
-    const std::string& program_version,
-    const std::vector<std::string>& input_args);
+const LaunchArguments parse_args(const std::string& program_name,
+                                 const std::string& program_version,
+                                 const std::vector<std::string>& input_args);
 
 }  // namespace sobjmanager
 #endif  // SCENE_OBJECTS_MANAGER__ARGS_PARSER_HPP_

@@ -11,12 +11,12 @@ using CollisionObject = moveit_msgs::msg::CollisionObject;
 namespace sobjmanager {
 
 class Spawner {
-public:
+ public:
   Spawner(std::string planning_frame_id);
 
   void spawn_object(const SceneObject& obj);
 
-private:
+ private:
   static CollisionObject make_collision_object(const SceneObject& raw_obj);
   void spawn(const CollisionObject& object);
 

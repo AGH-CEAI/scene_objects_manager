@@ -5,15 +5,27 @@
   <version>0.0.0</version>
   <description>Node for managing objects within MoveIt2 PlanningSceneInterface.</description>
   <maintainer email="mac.aleksandrowicz@gmail.com">Maciej Aleksandrowicz</maintainer>
+  <maintainer email="antonio.radominski@gmail.com">Antoni Radomiński-Lasek</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>cv_bridge</depend>
+  <depend>geometry_msgs</depend>
   <depend>moveit_msgs</depend>
   <depend>moveit_ros_planning_interface</depend>
   <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_ros</depend>
   <depend>yaml-cpp</depend>
+
+  <build_depend>rosidl_default_generators</build_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

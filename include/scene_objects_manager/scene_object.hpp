@@ -25,8 +25,8 @@ struct SceneObject {
   Pose pose;
 
   static const inline std::map<std::string, uint8_t> PRIMITIVE_STR_MAP = {
-    { "box", SolidPrimitive::BOX },   { "sphere", SolidPrimitive::SPHERE }, { "cylinder", SolidPrimitive::CYLINDER },
-    { "cone", SolidPrimitive::CONE }, { "prism", SolidPrimitive::PRISM },
+      {"box", SolidPrimitive::BOX},   {"sphere", SolidPrimitive::SPHERE}, {"cylinder", SolidPrimitive::CYLINDER},
+      {"cone", SolidPrimitive::CONE}, {"prism", SolidPrimitive::PRISM},
   };
   static const inline std::map<uint8_t, std::string> PRIMITIVE_UINT_MAP = reverse_map(PRIMITIVE_STR_MAP);
 };

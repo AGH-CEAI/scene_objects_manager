@@ -3,9 +3,8 @@
 namespace sobjmanager {
 
 Spawner::Spawner(std::string planning_frame_id)
-  : _planning_frame_id(planning_frame_id)
-  , _planning_scene_interface(moveit::planning_interface::PlanningSceneInterface()) {
-}
+    : _planning_frame_id(planning_frame_id),
+      _planning_scene_interface(moveit::planning_interface::PlanningSceneInterface()) {}
 
 void Spawner::spawn_object(const SceneObject& obj) {
   spawn(make_collision_object(obj));
